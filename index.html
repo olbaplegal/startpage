@@ -127,8 +127,6 @@ button:hover { color: var(--link-hover); }
 }
 .tog[aria-expanded="true"]::before { transform: rotate(90deg); }
 .tog:hover { color: var(--link-hover); }
-.tog:disabled { opacity: .35; cursor: default; }
-.tog:disabled:hover { color: var(--link); }
 /* collapsible headers: arrow on the right, like "filter ▼" */
 details.drop > summary { cursor: pointer; user-select: none; list-style: none; }
 details.drop > summary::-webkit-details-marker { display: none; }
@@ -1006,7 +1004,6 @@ const statChecks = () => document.querySelectorAll('#opt-stats > label > input, 
 // a stat's settings block is visible only while one of its stats is checked
 function syncStatSettings() {
   const on = new Set([...statChecks()].filter((c) => c.checked).map((c) => c.value));
-  document.querySelectorAll('.tog').forEach((b) => { b.disabled = !on.has(b.dataset.for); });
   document.querySelectorAll('.sset').forEach((el) => {
     const off = !on.has(el.dataset.for);
     el.classList.toggle('off', off);
