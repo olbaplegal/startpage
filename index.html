@@ -136,8 +136,9 @@ details.drop > summary::after {
 }
 details.drop[open] > summary::after { transform: rotate(90deg); }
 #stats-det[open] > summary, #pic-det[open] > summary { margin-bottom: 4px; }
-.pic-opts { display: grid; gap: 4px; }
-.pic-opts .row { display: flex; align-items: center; gap: 6px; }
+.pic-opts { display: grid; grid-template-columns: 160px 1fr; gap: 6px 10px; align-items: center; }
+.pic-opts label.k { font-weight: bold; }
+.pic-opts select { justify-self: start; }
 /* line between the Sites (JSON) label and its textarea */
 .opt .sep { border-bottom: 1px solid var(--box-border); padding-bottom: 3px; margin-top: 4px; }
 .picrow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
@@ -198,7 +199,7 @@ body.frames { padding-left: 200px; }
 
 @media (max-width: 600px) {
   #logo h1 { font-size: 40px; }
-  .opt { grid-template-columns: 1fr; }
+  .opt, .pic-opts { grid-template-columns: 1fr; }
   #tabs a { padding: 3px 8px; }
   body.frames { padding-left: 0; }
   body.frames #frame { position: static; width: auto; border-right: 0; border-bottom: 1px solid var(--box-border); max-height: 40vh; }
@@ -285,7 +286,7 @@ body.frames { padding-left: 200px; }
   <div class="bd">
     <div class="opt">
       <label class="k" for="opt-title" data-i18n="optTitle"></label>
-      <input id="opt-title" type="text">
+      <input id="opt-title" type="text" placeholder="startpage">
       <label class="k" for="opt-name" data-i18n="optName"></label>
       <input id="opt-name" type="text" data-i18n-ph="optNamePh">
       <label class="k" for="opt-lang" data-i18n="optLang"></label>
@@ -301,22 +302,22 @@ body.frames { padding-left: 200px; }
       </select>
       <label class="k" for="opt-newtab" data-i18n="optNewTab"></label>
       <span><input id="opt-newtab" type="checkbox"></span>
-      <details class="full drop" id="pic-det"><summary><b data-i18n="optPic"></b></summary>
+      <details class="full drop" id="pic-det"><summary><b data-i18n="optPicSec"></b></summary>
       <div class="sub pic-opts">
+        <label class="k" for="opt-pic" data-i18n="optPic"></label>
         <div class="picrow">
           <input id="opt-pic" type="text" data-i18n-ph="optPicPh">
           <button id="opt-pic-file" type="button" data-i18n="optPicFile"></button>
           <button id="opt-pic-clear" type="button" data-i18n="remove"></button>
           <input id="pic-file" type="file" accept="image/*" hidden>
         </div>
-        <label class="row"><span data-i18n="optPicRatio"></span>
-          <select id="opt-pic-ratio">
-            <option value="" data-i18n="ratioOrig"></option>
-            <option value="16 / 9">16:9</option>
-            <option value="4 / 3">4:3</option>
-            <option value="1 / 1">1:1</option>
-          </select>
-        </label>
+        <label class="k" for="opt-pic-ratio" data-i18n="optPicRatio"></label>
+        <select id="opt-pic-ratio">
+          <option value="" data-i18n="ratioOrig"></option>
+          <option value="16 / 9">16:9</option>
+          <option value="4 / 3">4:3</option>
+          <option value="1 / 1">1:1</option>
+        </select>
       </div>
       </details>
       <details class="full drop" id="stats-det"><summary><b data-i18n="optStats"></b></summary>
@@ -411,7 +412,7 @@ const I18N = {
     days: (n) => `${n} dia${n === 1 ? '' : 's'}`,
     rainToday: 'hoje',
     optCur: 'Cotações', curHint: 'Fiat (USD, EUR, BRL…) e cripto (BTC, ETH, USDT, SOL…). Ex.: USDT/BRL, USDT/BTC.', noPairs: 'Nenhuma cotação.', badPair: 'Código de moeda inválido.', optStats: 'Stats visíveis',
-    optPic: 'Imagem', optPicPh: 'URL (https://… ou file:///…)', optPicFile: 'Escolher arquivo…', optPicRatio: 'Proporção da imagem',
+    optPicSec: 'Exibir imagem', optPic: 'Imagem', optPicPh: 'URL (https://… ou file:///…)', optPicFile: 'Escolher arquivo…', optPicRatio: 'Proporção da imagem',
     ratioOrig: 'original', picLocal: 'arquivo: ', picTooBig: 'Imagem grande demais para salvar no navegador (máx. ~3 MB).',
     optSitesFmt: '[{"cat": "Nome", "url": "opcional", "tag": "opcional", "links": [["Título", "https://…"]]}]',
     save: 'Salvar', export: 'Exportar', import: 'Importar', reset: 'Restaurar padrão',
@@ -451,7 +452,7 @@ const I18N = {
     days: (n) => `${n} day${n === 1 ? '' : 's'}`,
     rainToday: 'today',
     optCur: 'Currency rates', curHint: 'Fiat (USD, EUR, BRL…) and crypto (BTC, ETH, USDT, SOL…). E.g. USDT/BRL, USDT/BTC.', noPairs: 'No rates.', badPair: 'Invalid currency code.', optStats: 'Visible stats',
-    optPic: 'Image', optPicPh: 'URL (https://… or file:///…)', optPicFile: 'Choose file…', optPicRatio: 'Image aspect ratio',
+    optPicSec: 'Display image', optPic: 'Image', optPicPh: 'URL (https://… or file:///…)', optPicFile: 'Choose file…', optPicRatio: 'Image aspect ratio',
     ratioOrig: 'original', picLocal: 'file: ', picTooBig: 'Image too large to store in the browser (max ~3 MB).',
     optSitesFmt: '[{"cat": "Name", "url": "optional", "tag": "optional", "links": [["Title", "https://…"]]}]',
     save: 'Save', export: 'Export', import: 'Import', reset: 'Restore defaults',
