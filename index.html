@@ -60,8 +60,20 @@ a:hover { color: var(--link-hover); }
 #tabs a.on { background: var(--hd-bg); font-weight: bold; }
 
 #panel { margin-top: 10px; }
+
+/* options popup */
+#options-pop {
+  display: none; position: fixed; z-index: 20; width: 580px; max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px); flex-direction: column; margin: 0;
+  box-shadow: 0 3px 12px rgba(0,0,0,.35);
+}
+#options-pop.on { display: flex; }
+#options-pop > .hd { cursor: move; user-select: none; touch-action: none; }
+#options-pop > .bd { overflow-y: auto; }
+#opt-close { cursor: pointer; font-weight: bold; font-size: 13px; }
 #panel .box { display: none; }
 #panel .box.on { display: block; }
+#tabs a[data-p="options"].on { background: var(--hd-bg); font-weight: bold; }
 textarea, select, input[type=text], input[type=number] {
   border: 1px solid var(--box-border); background: var(--input-bg); color: var(--text);
   font: 12px arial, sans-serif; padding: 3px;
@@ -141,11 +153,11 @@ body.frames { padding-left: 200px; }
 <aside id="frame">
   <div class="flogo" id="frame-title">startpage</div>
   <div class="fopts">
-    <a id="fr-remove">[Remove Frames]</a>
-    <a id="fr-hidedirs">[Hide Directories]</a>
-    <a id="fr-worksafe">[Show Worksafe Only]</a>
+    <a id="fr-remove" data-i18n="frRemove"></a>
+    <a id="fr-hidedirs" data-i18n="frHideDirs"></a>
+    <a id="fr-worksafe" data-i18n="frWorksafe"></a>
   </div>
-  <div class="fhd"><span>Sites</span><button id="frame-toggle" title="recolher">−</button></div>
+  <div class="fhd"><span>Sites</span><button id="frame-toggle" data-i18n-title="collapse">−</button></div>
   <ul id="frame-list"></ul>
 </aside>
 <div id="wrap">
@@ -158,10 +170,10 @@ body.frames { padding-left: 200px; }
     <div class="hd">
       <h2>Sites</h2>
       <span class="filter">
-        <a id="filter-btn">filter ▼</a>
+        <a id="filter-btn" data-i18n="filter"></a>
         <div id="filter-menu">
-          <label><input type="checkbox" id="use-frames"><span class="ck"></span> Use Frames</label>
-          <label><input type="checkbox" id="use-catalog"><span class="ck"></span> Use Catalog</label>
+          <label><input type="checkbox" id="use-frames"><span class="ck"></span> <span data-i18n="useFrames"></span></label>
+          <label><input type="checkbox" id="use-catalog"><span class="ck"></span> <span data-i18n="useCatalog"></span></label>
         </div>
       </span>
     </div>
@@ -176,91 +188,153 @@ body.frames { padding-left: 200px; }
   </section>
 
   <nav id="tabs">
-    <a data-p="notes">Notas</a><a data-p="todo">Tarefas</a><a data-p="keys">Atalhos</a><a id="random">Aleatório</a><a data-p="options">Options</a>
+    <a data-p="notes" data-i18n="notes"></a><a data-p="todo" data-i18n="todo"></a><a data-p="keys" data-i18n="keys"></a><a id="random" data-i18n="random"></a><a data-p="options" data-i18n="options"></a>
   </nav>
 
   <div id="panel">
     <section class="box" id="p-notes">
-      <div class="hd"><h2>Notas</h2><span class="muted">salva automaticamente</span></div>
-      <div class="bd"><textarea id="notes" placeholder="Rascunhos, links, lembretes…"></textarea></div>
+      <div class="hd"><h2 data-i18n="notes"></h2><span class="muted" data-i18n="autosave"></span></div>
+      <div class="bd"><textarea id="notes" data-i18n-ph="notesPh"></textarea></div>
     </section>
 
     <section class="box" id="p-todo">
-      <div class="hd"><h2>Tarefas</h2><a id="todo-clear" class="muted" href="#">limpar concluídas</a></div>
+      <div class="hd"><h2 data-i18n="todo"></h2><a id="todo-clear" class="muted" href="#" data-i18n="clearDone"></a></div>
       <div class="bd">
-        <form id="todo-form"><input id="todo-in" type="text" placeholder="Nova tarefa…"><button>Adicionar</button></form>
+        <form id="todo-form"><input id="todo-in" type="text" data-i18n-ph="todoPh"><button data-i18n="add"></button></form>
         <ul id="todo-list"></ul>
       </div>
     </section>
 
     <section class="box" id="p-keys">
-      <div class="hd"><h2>Atalhos</h2></div>
+      <div class="hd"><h2 data-i18n="keys"></h2></div>
       <div class="bd">
         <table class="keys">
-          <tr><td><kbd>n</kbd> / <kbd>t</kbd> / <kbd>o</kbd></td><td>abre Notas / Tarefas / Options</td></tr>
-          <tr><td><kbd>f</kbd></td><td>liga/desliga o frame lateral</td></tr>
-          <tr><td><kbd>Esc</kbd></td><td>fecha painel / menu do filter</td></tr>
+          <tr><td><kbd>n</kbd> / <kbd>t</kbd> / <kbd>o</kbd></td><td data-i18n="keyPanels"></td></tr>
+          <tr><td><kbd>f</kbd></td><td data-i18n="keyFrame"></td></tr>
+          <tr><td><kbd>Esc</kbd></td><td data-i18n="keyEsc"></td></tr>
         </table>
       </div>
     </section>
 
-    <section class="box" id="p-options">
-      <div class="hd"><h2>Options</h2></div>
-      <div class="bd">
-        <div class="opt">
-          <label class="k" for="opt-title">Título</label>
-          <input id="opt-title" type="text">
-          <label class="k" for="opt-name">Seu nome (saudação)</label>
-          <input id="opt-name" type="text" placeholder="vazio = sem saudação">
-          <label class="k" for="opt-theme">Tema</label>
-          <select id="opt-theme">
-            <option value="yotsuba">Yotsuba (bege)</option>
-            <option value="yotsuba-b">Yotsuba B (azul)</option>
-            <option value="dark">Escuro</option>
-          </select>
-          <label class="k" for="opt-cols">Colunas</label>
-          <input id="opt-cols" type="number" min="1" max="8">
-          <label class="k" for="opt-newtab">Links em nova aba</label>
-          <span><input id="opt-newtab" type="checkbox"></span>
-          <label class="k" for="opt-city">Cidade (clima)</label>
-          <input id="opt-city" type="text" placeholder="ex: São Paulo">
-          <label class="k" for="opt-cur">Moeda (cotação)</label>
-          <select id="opt-cur">
-            <option value="USD-BRL">USD → BRL</option>
-            <option value="EUR-BRL">EUR → BRL</option>
-            <option value="BTC-BRL">BTC → BRL</option>
-          </select>
-          <span class="k"><b>Stats visíveis</b></span>
-          <span id="opt-stats"></span>
-          <label class="k full" for="opt-sites">Sites (JSON) <span class="muted">— <code>[{"cat": "Nome", "url": "opcional", "tag": "opcional", "links": [["Título", "https://…"]]}]</code></span></label>
-          <textarea id="opt-sites" class="full" spellcheck="false"></textarea>
-        </div>
-        <div class="btns">
-          <button id="opt-save">Salvar</button>
-          <button id="opt-export">Exportar</button>
-          <button id="opt-import">Importar</button>
-          <button id="opt-reset">Restaurar padrão</button>
-          <span id="opt-msg"></span>
-        </div>
-        <input id="import-file" type="file" accept="application/json" hidden>
-      </div>
-    </section>
   </div>
 
   <footer>
-    <p><a id="f-export">Exportar</a> • <a id="f-import">Importar</a> • <a id="f-top">Topo</a></p>
+    <p><a id="f-export" data-i18n="export"></a> • <a id="f-import" data-i18n="import"></a> • <a id="f-top" data-i18n="top"></a></p>
   </footer>
 </div>
 
+<section class="box" id="options-pop" role="dialog" aria-labelledby="opt-h">
+  <div class="hd" id="opt-drag"><h2 id="opt-h" data-i18n="options"></h2><a id="opt-close" data-i18n-title="close">[x]</a></div>
+  <div class="bd">
+    <div class="opt">
+      <label class="k" for="opt-title" data-i18n="optTitle"></label>
+      <input id="opt-title" type="text">
+      <label class="k" for="opt-name" data-i18n="optName"></label>
+      <input id="opt-name" type="text" data-i18n-ph="optNamePh">
+      <label class="k" for="opt-lang" data-i18n="optLang"></label>
+      <select id="opt-lang">
+        <option value="pt">Português</option>
+        <option value="en">English</option>
+      </select>
+      <label class="k" for="opt-theme" data-i18n="optTheme"></label>
+      <select id="opt-theme">
+        <option value="yotsuba" data-i18n="themeY"></option>
+        <option value="yotsuba-b" data-i18n="themeB"></option>
+        <option value="dark" data-i18n="themeDark"></option>
+      </select>
+      <label class="k" for="opt-cols" data-i18n="optCols"></label>
+      <input id="opt-cols" type="number" min="1" max="8">
+      <label class="k" for="opt-newtab" data-i18n="optNewTab"></label>
+      <span><input id="opt-newtab" type="checkbox"></span>
+      <label class="k" for="opt-city" data-i18n="optCity"></label>
+      <input id="opt-city" type="text" data-i18n-ph="optCityPh">
+      <label class="k" for="opt-cur" data-i18n="optCur"></label>
+      <select id="opt-cur">
+        <option value="USD-BRL">USD → BRL</option>
+        <option value="EUR-BRL">EUR → BRL</option>
+        <option value="BTC-BRL">BTC → BRL</option>
+      </select>
+      <span class="k"><b data-i18n="optStats"></b></span>
+      <span id="opt-stats"></span>
+      <label class="k full" for="opt-sites">Sites (JSON) <span class="muted">— <code data-i18n="optSitesFmt"></code></span></label>
+      <textarea id="opt-sites" class="full" spellcheck="false"></textarea>
+    </div>
+    <div class="btns">
+      <button id="opt-save" data-i18n="save"></button>
+      <button id="opt-export" data-i18n="export"></button>
+      <button id="opt-import" data-i18n="import"></button>
+      <button id="opt-reset" data-i18n="reset"></button>
+      <span id="opt-msg"></span>
+    </div>
+    <input id="import-file" type="file" accept="application/json" hidden>
+  </div>
+</section>
+
 <script>
-const STAT_DEFS = {
-  clock:   'Hora',
-  date:    'Data',
-  weather: 'Clima',
-  currency:'Cotação',
-  todos:   'Tarefas',
-  uptime:  'Aberto há',
+const I18N = {
+  pt: {
+    locale: 'pt-BR',
+    filter: 'filtro ▼', useFrames: 'Usar Frames', useCatalog: 'Usar Catálogo',
+    frRemove: '[Remover Frames]', frHideDirs: '[Esconder Diretórios]', frWorksafe: '[Mostrar Só Worksafe]',
+    collapse: 'recolher', close: 'fechar',
+    notes: 'Notas', todo: 'Tarefas', keys: 'Atalhos', random: 'Aleatório', options: 'Options',
+    autosave: 'salva automaticamente', notesPh: 'Rascunhos, links, lembretes…',
+    clearDone: 'limpar concluídas', todoPh: 'Nova tarefa…', add: 'Adicionar', remove: 'remover', nothing: 'Nada pendente.',
+    keyPanels: 'abre Notas / Tarefas / Options', keyFrame: 'liga/desliga o frame lateral', keyEsc: 'fecha painel / menu do filtro / Options',
+    optTitle: 'Título', optName: 'Seu nome (saudação)', optNamePh: 'vazio = sem saudação', optLang: 'Idioma',
+    optTheme: 'Tema', themeY: 'Yotsuba (bege)', themeB: 'Yotsuba B (azul)', themeDark: 'Escuro',
+    optCols: 'Colunas', optNewTab: 'Links em nova aba', optCity: 'Cidade (clima)', optCityPh: 'ex: São Paulo',
+    optCur: 'Moeda (cotação)', optStats: 'Stats visíveis',
+    optSitesFmt: '[{"cat": "Nome", "url": "opcional", "tag": "opcional", "links": [["Título", "https://…"]]}]',
+    save: 'Salvar', export: 'Exportar', import: 'Importar', reset: 'Restaurar padrão', top: 'Topo',
+    saved: 'Salvo.', restored: 'Padrão restaurado.', imported: 'Importado.',
+    badJson: 'JSON inválido: ', badSites: 'Formato de sites inválido.', importFail: 'Falha ao importar: ',
+    confirmReset: 'Restaurar todas as configurações padrão? (notas e tarefas são mantidas)',
+    unavailable: 'indisponível',
+    greet: ['Boa madrugada', 'Bom dia', 'Boa tarde', 'Boa noite'],
+    pending: (n) => `${n} pendente${n === 1 ? '' : 's'}`,
+    stats: { clock: 'Hora', date: 'Data', weather: 'Clima', currency: 'Cotação', todos: 'Tarefas', uptime: 'Aberto há' },
+    wmo: { 0: 'limpo', 1: 'quase limpo', 2: 'parc. nublado', 3: 'nublado', 45: 'neblina', 48: 'neblina',
+      51: 'garoa', 53: 'garoa', 55: 'garoa', 61: 'chuva fraca', 63: 'chuva', 65: 'chuva forte',
+      80: 'pancadas', 81: 'pancadas', 82: 'temporal', 95: 'trovoadas', 96: 'trovoadas', 99: 'trovoadas' },
+  },
+  en: {
+    locale: 'en-US',
+    filter: 'filter ▼', useFrames: 'Use Frames', useCatalog: 'Use Catalog',
+    frRemove: '[Remove Frames]', frHideDirs: '[Hide Directories]', frWorksafe: '[Show Worksafe Only]',
+    collapse: 'collapse', close: 'close',
+    notes: 'Notes', todo: 'Tasks', keys: 'Shortcuts', random: 'Random', options: 'Options',
+    autosave: 'saved automatically', notesPh: 'Drafts, links, reminders…',
+    clearDone: 'clear completed', todoPh: 'New task…', add: 'Add', remove: 'remove', nothing: 'Nothing pending.',
+    keyPanels: 'opens Notes / Tasks / Options', keyFrame: 'toggles the side frame', keyEsc: 'closes panel / filter menu / Options',
+    optTitle: 'Title', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting', optLang: 'Language',
+    optTheme: 'Theme', themeY: 'Yotsuba (beige)', themeB: 'Yotsuba B (blue)', themeDark: 'Dark',
+    optCols: 'Columns', optNewTab: 'Open links in new tab', optCity: 'City (weather)', optCityPh: 'e.g. London',
+    optCur: 'Currency (rate)', optStats: 'Visible stats',
+    optSitesFmt: '[{"cat": "Name", "url": "optional", "tag": "optional", "links": [["Title", "https://…"]]}]',
+    save: 'Save', export: 'Export', import: 'Import', reset: 'Restore defaults', top: 'Top',
+    saved: 'Saved.', restored: 'Defaults restored.', imported: 'Imported.',
+    badJson: 'Invalid JSON: ', badSites: 'Invalid sites format.', importFail: 'Import failed: ',
+    confirmReset: 'Restore all default settings? (notes and tasks are kept)',
+    unavailable: 'unavailable',
+    greet: ['Good night', 'Good morning', 'Good afternoon', 'Good evening'],
+    pending: (n) => `${n} pending`,
+    stats: { clock: 'Time', date: 'Date', weather: 'Weather', currency: 'Rate', todos: 'Tasks', uptime: 'Open for' },
+    wmo: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'fog',
+      51: 'drizzle', 53: 'drizzle', 55: 'drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain',
+      80: 'showers', 81: 'showers', 82: 'storm', 95: 'thunderstorm', 96: 'thunderstorm', 99: 'thunderstorm' },
+  },
 };
+const STAT_KEYS = Object.keys(I18N.pt.stats);
+const L = () => I18N[cfg.lang] || I18N.pt;
+
+function applyLang() {
+  const t = L();
+  document.documentElement.lang = t.locale;
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t[el.dataset.i18n]; });
+  document.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t[el.dataset.i18nPh]; });
+  document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t[el.dataset.i18nTitle]; });
+}
 
 // bump when DEFAULTS.sites changes, so saved configs pick up the new list
 const SITES_VERSION = 2;
@@ -268,6 +342,7 @@ const SITES_VERSION = 2;
 const DEFAULTS = {
   title: 'startpage',
   name: '',
+  lang: 'pt',
   theme: 'yotsuba',
   cols: 5,
   newTab: false,
@@ -316,7 +391,7 @@ const store = {
 };
 
 let cfg = { ...structuredClone(DEFAULTS), ...store.get('sp.config', {}) };
-cfg.stats = cfg.stats.filter((k) => k in STAT_DEFS);
+cfg.stats = cfg.stats.filter((k) => STAT_KEYS.includes(k));
 if (cfg.sitesVersion !== SITES_VERSION) {
   cfg.sites = structuredClone(DEFAULTS.sites);
   cfg.sitesVersion = SITES_VERSION;
@@ -328,6 +403,7 @@ const openedAt = Date.now();
 /* ---------- render ---------- */
 function applyConfig() {
   document.documentElement.dataset.theme = cfg.theme;
+  applyLang();
   $('#title').textContent = cfg.title;
   document.title = cfg.title;
   $('#cols').style.columnCount = Math.max(1, Math.min(8, +cfg.cols || 5));
@@ -338,6 +414,7 @@ function applyConfig() {
   greet();
   document.body.classList.toggle('frames', cfg.useFrames);
   syncFilterMenu();
+  renderTodos();
 }
 
 function siteLink(name, url) {
@@ -353,7 +430,7 @@ function renderFrame() {
   for (const g of cfg.sites) {
     for (const [name, url] of g.links || []) {
       const li = document.createElement('li');
-      li.append(siteLink(`${g.cat} - ${name}`, url));
+      li.append(siteLink(name, url));
       ul.append(li);
     }
   }
@@ -380,7 +457,7 @@ function renderSites() {
 
 function greet() {
   const h = new Date().getHours();
-  const p = h < 5 ? 'Boa madrugada' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+  const p = L().greet[h < 5 ? 0 : h < 12 ? 1 : h < 18 ? 2 : 3];
   $('#greet').textContent = cfg.name ? `${p}, ${cfg.name}.` : '';
 }
 
@@ -390,11 +467,12 @@ const statCache = { weather: '…', currency: '…' };
 function renderStats() {
   const row = $('#statrow');
   row.innerHTML = '';
+  statCache.weather = statCache.currency = '…';
   $('#stats-box').style.display = cfg.stats.length ? '' : 'none';
   for (const k of cfg.stats) {
     const s = document.createElement('span');
     s.className = 'stat';
-    s.innerHTML = `<b>${STAT_DEFS[k]}:</b> <span id="st-${k}"></span>`;
+    s.innerHTML = `<b>${L().stats[k]}:</b> <span id="st-${k}"></span>`;
     row.append(s);
   }
   tick();
@@ -406,19 +484,15 @@ function setStat(k, v) { const el = document.getElementById('st-' + k); if (el) 
 
 function tick() {
   const now = new Date();
-  setStat('clock', now.toLocaleTimeString('pt-BR'));
-  setStat('date', now.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' }));
-  const pend = todos.filter((t) => !t.done).length;
-  setStat('todos', `${pend} pendente${pend === 1 ? '' : 's'}`);
+  const t = L();
+  setStat('clock', now.toLocaleTimeString(t.locale));
+  setStat('date', now.toLocaleDateString(t.locale, { weekday: 'short', day: '2-digit', month: 'short' }));
+  setStat('todos', t.pending(todos.filter((x) => !x.done).length));
   const m = Math.floor((Date.now() - openedAt) / 60000);
   setStat('uptime', m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`);
   setStat('weather', statCache.weather);
   setStat('currency', statCache.currency);
 }
-
-const WMO = { 0: 'limpo', 1: 'quase limpo', 2: 'parc. nublado', 3: 'nublado', 45: 'neblina', 48: 'neblina',
-  51: 'garoa', 53: 'garoa', 55: 'garoa', 61: 'chuva fraca', 63: 'chuva', 65: 'chuva forte',
-  80: 'pancadas', 81: 'pancadas', 82: 'temporal', 95: 'trovoadas', 96: 'trovoadas', 99: 'trovoadas' };
 
 async function cached(key, ttlMs, fn) {
   const c = store.get(key);
@@ -431,8 +505,8 @@ async function cached(key, ttlMs, fn) {
 async function loadWeather() {
   if (!cfg.city) { statCache.weather = '—'; return tick(); }
   try {
-    const loc = await cached('sp.geo.' + cfg.city, 30 * 864e5, async () => {
-      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=1&language=pt&name=${encodeURIComponent(cfg.city)}`);
+    const loc = await cached('sp.geo.' + cfg.lang + '.' + cfg.city, 30 * 864e5, async () => {
+      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=1&language=${cfg.lang}&name=${encodeURIComponent(cfg.city)}`);
       const j = await r.json();
       if (!j.results?.length) throw new Error('cidade não encontrada');
       const { latitude, longitude, name } = j.results[0];
@@ -442,8 +516,8 @@ async function loadWeather() {
       const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,weather_code&timezone=auto`);
       return (await r.json()).current;
     });
-    statCache.weather = `${Math.round(w.temperature_2m)}°C ${WMO[w.weather_code] ?? ''} (${loc.name})`;
-  } catch (e) { statCache.weather = 'indisponível'; }
+    statCache.weather = `${Math.round(w.temperature_2m)}°C ${L().wmo[w.weather_code] ?? ''} (${loc.name})`;
+  } catch (e) { statCache.weather = L().unavailable; }
   tick();
 }
 
@@ -456,9 +530,9 @@ async function loadCurrency() {
     });
     const [from] = cfg.currency.split('-');
     const pct = parseFloat(v.pctChange);
-    const val = parseFloat(v.bid).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const val = parseFloat(v.bid).toLocaleString(L().locale, { style: 'currency', currency: 'BRL' });
     statCache.currency = `${from} ${val} (${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%)`;
-  } catch (e) { statCache.currency = 'indisponível'; }
+  } catch (e) { statCache.currency = L().unavailable; }
   tick();
 }
 
@@ -503,13 +577,13 @@ function go(url) { cfg.newTab ? window.open(url, '_blank', 'noopener') : (locati
 
 /* ---------- tabs / panels ---------- */
 function openPanel(p) {
+  if (p === 'options') return toggleOptions();
   const already = $(`#p-${p}`).classList.contains('on');
   document.querySelectorAll('#panel .box').forEach((b) => b.classList.remove('on'));
-  document.querySelectorAll('#tabs a').forEach((a) => a.classList.remove('on'));
+  document.querySelectorAll('#tabs a:not([data-p="options"])').forEach((a) => a.classList.remove('on'));
   if (already) return;
   $(`#p-${p}`).classList.add('on');
   $(`#tabs a[data-p="${p}"]`).classList.add('on');
-  if (p === 'options') fillOptions();
   if (p === 'notes') $('#notes').focus();
   if (p === 'todo') $('#todo-in').focus();
   $(`#p-${p}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -525,7 +599,8 @@ document.addEventListener('keydown', (e) => {
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
   if (e.key === 'Escape' && !typing) {
     filterMenu.classList.remove('on');
-    document.querySelectorAll('#panel .box.on, #tabs a.on').forEach((x) => x.classList.remove('on'));
+    if (pop.classList.contains('on')) closeOptions();
+    else document.querySelectorAll('#panel .box.on, #tabs a.on').forEach((x) => x.classList.remove('on'));
   }
   if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === 'f') { e.preventDefault(); setFlag('useFrames', !cfg.useFrames); }
@@ -551,11 +626,11 @@ function renderTodos() {
     cb.type = 'checkbox'; cb.checked = t.done;
     cb.onchange = () => { todos[i].done = cb.checked; saveTodos(); };
     const sp = document.createElement('span'); sp.textContent = t.text;
-    const x = document.createElement('span'); x.className = 'x'; x.textContent = '[x]'; x.title = 'remover';
+    const x = document.createElement('span'); x.className = 'x'; x.textContent = '[x]'; x.title = L().remove;
     x.onclick = () => { todos.splice(i, 1); saveTodos(); };
     li.append(cb, sp, x); ul.append(li);
   });
-  if (!todos.length) ul.innerHTML = '<li class="muted">Nada pendente.</li>';
+  if (!todos.length) ul.innerHTML = `<li class="muted">${L().nothing}</li>`;
 }
 $('#todo-form').addEventListener('submit', (e) => {
   e.preventDefault();
@@ -567,8 +642,47 @@ $('#todo-form').addEventListener('submit', (e) => {
 });
 $('#todo-clear').addEventListener('click', (e) => { e.preventDefault(); todos = todos.filter((t) => !t.done); saveTodos(); });
 
+/* ---------- options popup ---------- */
+const pop = $('#options-pop');
+
+function clampPop(x, y) {
+  const r = pop.getBoundingClientRect();
+  pop.style.left = Math.max(0, Math.min(x, innerWidth - r.width)) + 'px';
+  pop.style.top = Math.max(0, Math.min(y, innerHeight - r.height)) + 'px';
+}
+function openOptions() {
+  fillOptions();
+  pop.classList.add('on');
+  $('#tabs a[data-p="options"]').classList.add('on');
+  if (!pop.dataset.placed) {
+    const r = pop.getBoundingClientRect();
+    clampPop((innerWidth - r.width) / 2, Math.max(16, (innerHeight - r.height) / 2));
+    pop.dataset.placed = '1';
+  } else clampPop(pop.offsetLeft, pop.offsetTop);
+}
+function closeOptions() {
+  pop.classList.remove('on');
+  $('#tabs a[data-p="options"]').classList.remove('on');
+}
+function toggleOptions() { pop.classList.contains('on') ? closeOptions() : openOptions(); }
+$('#opt-close').addEventListener('click', closeOptions);
+addEventListener('resize', () => { if (pop.classList.contains('on')) clampPop(pop.offsetLeft, pop.offsetTop); });
+
+$('#opt-drag').addEventListener('pointerdown', (e) => {
+  if (e.target.closest('#opt-close') || e.button !== 0) return;
+  const dx = e.clientX - pop.offsetLeft, dy = e.clientY - pop.offsetTop;
+  const h = e.currentTarget;
+  h.setPointerCapture(e.pointerId);
+  const move = (ev) => clampPop(ev.clientX - dx, ev.clientY - dy);
+  const up = () => { h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up); };
+  h.addEventListener('pointermove', move);
+  h.addEventListener('pointerup', up);
+  h.addEventListener('pointercancel', up);
+});
+
 /* ---------- options ---------- */
 function fillOptions() {
+  $('#opt-lang').value = cfg.lang;
   $('#opt-title').value = cfg.title;
   $('#opt-name').value = cfg.name;
   $('#opt-theme').value = cfg.theme;
@@ -579,7 +693,7 @@ function fillOptions() {
   $('#opt-sites').value = JSON.stringify(cfg.sites, null, 2);
   const box = $('#opt-stats');
   box.innerHTML = '';
-  for (const [k, label] of Object.entries(STAT_DEFS)) {
+  for (const [k, label] of Object.entries(L().stats)) {
     const l = document.createElement('label');
     l.style.marginRight = '10px';
     l.innerHTML = `<input type="checkbox" value="${k}" ${cfg.stats.includes(k) ? 'checked' : ''}> ${label}`;
@@ -603,12 +717,13 @@ function commit(next) {
 
 $('#opt-save').addEventListener('click', () => {
   let sites;
-  try { sites = JSON.parse($('#opt-sites').value); } catch (e) { return msg('JSON inválido: ' + e.message); }
-  if (!validSites(sites)) return msg('Formato de sites inválido.');
+  try { sites = JSON.parse($('#opt-sites').value); } catch (e) { return msg(L().badJson + e.message); }
+  if (!validSites(sites)) return msg(L().badSites);
   commit({
     ...cfg,
     title: $('#opt-title').value.trim() || DEFAULTS.title,
     name: $('#opt-name').value.trim(),
+    lang: $('#opt-lang').value,
     theme: $('#opt-theme').value,
     cols: +$('#opt-cols').value || DEFAULTS.cols,
     newTab: $('#opt-newtab').checked,
@@ -617,14 +732,15 @@ $('#opt-save').addEventListener('click', () => {
     stats: [...document.querySelectorAll('#opt-stats input:checked')].map((i) => i.value),
     sites,
   });
-  msg('Salvo.');
+  fillOptions();
+  msg(L().saved);
 });
 
 $('#opt-reset').addEventListener('click', () => {
-  if (!confirm('Restaurar todas as configurações padrão? (notas e tarefas são mantidas)')) return;
+  if (!confirm(L().confirmReset)) return;
   commit(structuredClone(DEFAULTS));
   fillOptions();
-  msg('Padrão restaurado.');
+  msg(L().restored);
 });
 
 function exportAll() {
@@ -642,14 +758,14 @@ $('#import-file').addEventListener('change', async (e) => {
   try {
     const d = JSON.parse(await f.text());
     if (d.config) {
-      if (d.config.sites && !validSites(d.config.sites)) throw new Error('sites inválidos');
+      if (d.config.sites && !validSites(d.config.sites)) throw new Error(L().badSites);
       commit({ ...structuredClone(DEFAULTS), ...d.config });
     }
     if (typeof d.notes === 'string') { notes.value = d.notes; store.set('sp.notes', d.notes); }
     if (Array.isArray(d.todos)) { todos = d.todos; saveTodos(); }
-    if ($('#p-options').classList.contains('on')) fillOptions();
-    msg('Importado.');
-  } catch (err) { alert('Falha ao importar: ' + err.message); }
+    if (pop.classList.contains('on')) fillOptions();
+    msg(L().imported);
+  } catch (err) { alert(L().importFail + err.message); }
   e.target.value = '';
 });
 $('#opt-export').addEventListener('click', exportAll);
@@ -660,7 +776,6 @@ $('#f-top').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth
 
 /* ---------- init ---------- */
 applyConfig();
-renderTodos();
 </script>
 </body>
 </html>
