@@ -48,11 +48,8 @@ a:hover { color: var(--link-hover); }
 .cat ul { list-style: none; margin: 0; padding: 0; }
 .cat li { line-height: 16px; }
 
-#statrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 6px 10px; padding: 6px; }
-#statrow h3 { margin: 0 0 2px; font-size: 12px; font-weight: bold; text-decoration: underline; }
-#statrow h3 .city { font-weight: normal; text-decoration: none; }
-#statrow ul { list-style: none; margin: 0; padding: 0; }
-#statrow li { line-height: 16px; }
+#statrow { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 3px 12px; padding: 6px 8px; }
+#statrow .stat { line-height: 16px; }
 #statrow b { color: var(--text); }
 
 #tabs { border-top: 1px solid var(--box-border); text-align: center; margin-top: 6px; font-size: 0; }
@@ -101,7 +98,14 @@ button:hover { color: var(--link-hover); }
 .opt label.k { font-weight: bold; }
 .opt .full { grid-column: 1 / -1; }
 .opt .sub { padding-left: 10px; margin-top: -2px; }
-#opt-stats { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 3px 18px; }
+#opt-stats > label { display: block; line-height: 19px; }
+/* per-stat settings: collapsible, only shown while that stat is enabled */
+.sset { margin: 1px 0 5px 22px; padding: 2px 6px 4px; border-left: 2px solid var(--hd-bg); }
+.sset[hidden] { display: none; }
+.sset summary { cursor: pointer; color: var(--link); font-size: 11px; user-select: none; }
+.sset summary:hover { color: var(--link-hover); }
+.sset[open] summary { margin-bottom: 4px; }
+.sset .row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
 /* list editors (rates, time zones, countdowns) */
 .elist { list-style: none; margin: 0 0 4px; padding: 0; }
 .elist li { line-height: 18px; }
@@ -157,7 +161,6 @@ body.frames { padding-left: 200px; }
 @media (max-width: 600px) {
   #logo h1 { font-size: 40px; }
   .opt { grid-template-columns: 1fr; }
-  #opt-stats { grid-template-columns: repeat(2, auto); }
   #tabs a { padding: 3px 8px; }
   body.frames { padding-left: 0; }
   body.frames #frame { position: static; width: auto; border-right: 0; border-bottom: 1px solid var(--box-border); max-height: 40vh; }
@@ -261,42 +264,54 @@ body.frames { padding-left: 200px; }
       <input id="opt-cols" type="number" min="1" max="8">
       <label class="k" for="opt-newtab" data-i18n="optNewTab"></label>
       <span><input id="opt-newtab" type="checkbox"></span>
-      <label class="k" for="opt-city" data-i18n="optCity"></label>
-      <input id="opt-city" type="text" data-i18n-ph="optCityPh">
-      <label class="k" for="opt-country" data-i18n="optCountry"></label>
-      <span><input id="opt-country" type="text" maxlength="2" placeholder="BR"> <span class="muted" data-i18n="optCountryHint"></span></span>
-      <label class="k full" for="tz-in" data-i18n="optTz"></label>
-      <div class="full sub">
-        <ul class="elist" id="tz-list"></ul>
-        <div class="eadd">
-          <input id="tz-in" type="text" list="tz-codes" placeholder="Asia/Tokyo">
-          <button id="tz-add-btn" type="button" data-i18n="add"></button>
-        </div>
-        <datalist id="tz-codes"></datalist>
-      </div>
-      <label class="k full" for="cd-label" data-i18n="optCd"></label>
-      <div class="full sub">
-        <ul class="elist" id="cd-list"></ul>
-        <div class="eadd">
-          <input id="cd-label" type="text" data-i18n-ph="cdLabelPh">
-          <input id="cd-date" type="date">
-          <button id="cd-add-btn" type="button" data-i18n="add"></button>
-        </div>
-      </div>
-      <label class="k full" for="cur-from" data-i18n="optCur"></label>
-      <div class="full sub">
-        <ul class="elist" id="cur-list"></ul>
-        <div class="eadd">
-          <input id="cur-from" class="code" type="text" list="cur-codes" maxlength="5" placeholder="USDT">
-          <span>/</span>
-          <input id="cur-to" class="code" type="text" list="cur-codes" maxlength="5" placeholder="BRL">
-          <button id="cur-add-btn" type="button" data-i18n="add"></button>
-        </div>
-        <div class="muted" data-i18n="curHint"></div>
-        <datalist id="cur-codes"></datalist>
-      </div>
       <span class="k full"><b data-i18n="optStats"></b></span>
-      <div id="opt-stats" class="full sub"></div>
+      <div id="opt-stats" class="full sub">
+        <label><input type="checkbox" value="clock"> <span data-i18n-stat="clock"></span></label>
+        <label><input type="checkbox" value="tz"> <span data-i18n-stat="tz"></span></label>
+        <details class="sset" data-for="tz"><summary data-i18n="settings"></summary>
+          <ul class="elist" id="tz-list"></ul>
+          <div class="eadd">
+            <input id="tz-in" type="text" list="tz-codes" placeholder="Asia/Tokyo">
+            <button id="tz-add-btn" type="button" data-i18n="add"></button>
+          </div>
+          <datalist id="tz-codes"></datalist>
+        </details>
+        <label><input type="checkbox" value="date"> <span data-i18n-stat="date"></span></label>
+        <label><input type="checkbox" value="countdown"> <span data-i18n-stat="countdown"></span></label>
+        <details class="sset" data-for="countdown"><summary data-i18n="settings"></summary>
+          <ul class="elist" id="cd-list"></ul>
+          <div class="eadd">
+            <input id="cd-label" type="text" data-i18n-ph="cdLabelPh">
+            <input id="cd-date" type="date">
+            <button id="cd-add-btn" type="button" data-i18n="add"></button>
+          </div>
+        </details>
+        <label><input type="checkbox" value="holiday"> <span data-i18n-stat="holiday"></span></label>
+        <details class="sset" data-for="holiday"><summary data-i18n="settings"></summary>
+          <label class="row"><span data-i18n="optCountry"></span> <input id="opt-country" type="text" maxlength="2" placeholder="BR"></label>
+          <div class="muted" data-i18n="optCountryHint"></div>
+        </details>
+        <label><input type="checkbox" value="weather"> <span data-i18n-stat="weather"></span></label>
+        <label><input type="checkbox" value="weatherDetail"> <span data-i18n-stat="weatherDetail"></span></label>
+        <label><input type="checkbox" value="rain"> <span data-i18n-stat="rain"></span></label>
+        <details class="sset" data-for="weather weatherDetail rain"><summary data-i18n="settings"></summary>
+          <label class="row"><span data-i18n="optCity"></span> <input id="opt-city" type="text" data-i18n-ph="optCityPh"></label>
+        </details>
+        <label><input type="checkbox" value="currency"> <span data-i18n-stat="currency"></span></label>
+        <details class="sset" data-for="currency"><summary data-i18n="settings"></summary>
+          <ul class="elist" id="cur-list"></ul>
+          <div class="eadd">
+            <input id="cur-from" class="code" type="text" list="cur-codes" maxlength="5" placeholder="USDT">
+            <span>/</span>
+            <input id="cur-to" class="code" type="text" list="cur-codes" maxlength="5" placeholder="BRL">
+            <button id="cur-add-btn" type="button" data-i18n="add"></button>
+          </div>
+          <div class="muted" data-i18n="curHint"></div>
+          <datalist id="cur-codes"></datalist>
+        </details>
+        <label><input type="checkbox" value="todos"> <span data-i18n-stat="todos"></span></label>
+        <label><input type="checkbox" value="uptime"> <span data-i18n-stat="uptime"></span></label>
+      </div>
       <label class="k full" for="opt-sites">Sites (JSON) <span class="muted">— <code data-i18n="optSitesFmt"></code></span></label>
       <textarea id="opt-sites" class="full" spellcheck="false"></textarea>
     </div>
@@ -324,8 +339,8 @@ const I18N = {
     keyPanels: 'abre Notas / Tarefas / Options', keyFrame: 'liga/desliga o frame lateral', keyEsc: 'fecha painel / menu do filtro / Options',
     optTitle: 'Título', optName: 'Seu nome (saudação)', optNamePh: 'vazio = sem saudação', optLang: 'Idioma',
     optTheme: 'Tema', themeY: 'Yotsuba (bege)', themeB: 'Yotsuba B (azul)', themeDark: 'Escuro',
-    optCols: 'Colunas', optNewTab: 'Links em nova aba', optCity: 'Cidade (clima)', optCityPh: 'ex: São Paulo',
-    optCountry: 'País (feriados)', optCountryHint: 'código de 2 letras: BR, US, PT…',
+    optCols: 'Colunas', optNewTab: 'Links em nova aba', optCity: 'Cidade', optCityPh: 'ex: São Paulo',
+    settings: 'configurações', optCountry: 'País', optCountryHint: 'código de 2 letras: BR, US, PT…',
     optTz: 'Fusos extras', optCd: 'Contagem regressiva', cdLabelPh: 'Nome, ex.: Férias', badTz: 'Fuso inválido.', badCd: 'Preencha nome e data.',
     noItems: 'Nenhum item.', today: 'hoje!', past: 'passou',
     days: (n) => `${n} dia${n === 1 ? '' : 's'}`,
@@ -339,8 +354,7 @@ const I18N = {
     unavailable: 'indisponível',
     greet: ['Boa madrugada', 'Bom dia', 'Boa tarde', 'Boa noite'],
     pending: (n) => `${n} pendente${n === 1 ? '' : 's'}`,
-    statLabels: { holiday: 'Próx. feriado', weather: 'Agora', hilo: 'Máx/Mín', feels: 'Sensação', uv: 'UV', rain: 'Chuva' },
-    groups: { time: 'Horário', dates: 'Datas', weather: 'Clima', currency: 'Cotações', misc: 'Outros' },
+    statLabels: { holiday: 'Próx. feriado', hilo: 'Máx/Mín', feels: 'Sensação', uv: 'UV', rain: 'Chuva' },
     stats: { clock: 'Hora', tz: 'Fusos extras', date: 'Data', countdown: 'Contagem regressiva', holiday: 'Próx. feriado',
       weather: 'Clima', weatherDetail: 'Clima detalhado', rain: 'Chance de chuva', currency: 'Cotações', todos: 'Tarefas', uptime: 'Aberto há' },
     wmo: { 0: 'limpo', 1: 'quase limpo', 2: 'parc. nublado', 3: 'nublado', 45: 'neblina', 48: 'neblina',
@@ -358,8 +372,8 @@ const I18N = {
     keyPanels: 'opens Notes / Tasks / Options', keyFrame: 'toggles the side frame', keyEsc: 'closes panel / filter menu / Options',
     optTitle: 'Title', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting', optLang: 'Language',
     optTheme: 'Theme', themeY: 'Yotsuba (beige)', themeB: 'Yotsuba B (blue)', themeDark: 'Dark',
-    optCols: 'Columns', optNewTab: 'Open links in new tab', optCity: 'City (weather)', optCityPh: 'e.g. London',
-    optCountry: 'Country (holidays)', optCountryHint: '2-letter code: BR, US, PT…',
+    optCols: 'Columns', optNewTab: 'Open links in new tab', optCity: 'City', optCityPh: 'e.g. London',
+    settings: 'settings', optCountry: 'Country', optCountryHint: '2-letter code: BR, US, PT…',
     optTz: 'Extra time zones', optCd: 'Countdowns', cdLabelPh: 'Name, e.g. Vacation', badTz: 'Invalid time zone.', badCd: 'Fill in name and date.',
     noItems: 'No items.', today: 'today!', past: 'past',
     days: (n) => `${n} day${n === 1 ? '' : 's'}`,
@@ -373,8 +387,7 @@ const I18N = {
     unavailable: 'unavailable',
     greet: ['Good night', 'Good morning', 'Good afternoon', 'Good evening'],
     pending: (n) => `${n} pending`,
-    statLabels: { holiday: 'Next holiday', weather: 'Now', hilo: 'High/Low', feels: 'Feels like', uv: 'UV', rain: 'Rain' },
-    groups: { time: 'Time', dates: 'Dates', weather: 'Weather', currency: 'Rates', misc: 'Other' },
+    statLabels: { holiday: 'Next holiday', hilo: 'High/Low', feels: 'Feels like', uv: 'UV', rain: 'Rain' },
     stats: { clock: 'Time', tz: 'Extra time zones', date: 'Date', countdown: 'Countdowns', holiday: 'Next holiday',
       weather: 'Weather', weatherDetail: 'Weather details', rain: 'Chance of rain', currency: 'Rates', todos: 'Tasks', uptime: 'Open for' },
     wmo: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'fog',
@@ -390,6 +403,7 @@ function applyLang() {
   document.documentElement.lang = t.locale;
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t[el.dataset.i18n]; });
   document.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t[el.dataset.i18nPh]; });
+  document.querySelectorAll('[data-i18n-stat]').forEach((el) => { el.textContent = t.stats[el.dataset.i18nStat]; });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t[el.dataset.i18nTitle]; });
 }
 
@@ -536,15 +550,6 @@ function greet() {
 /* ---------- stats ---------- */
 const statCache = { weather: '…', weatherDetail: '…', rain: '…', holiday: null, cur: {} };
 
-// stats are shown in columns, one per group, in this order
-const STAT_GROUPS = {
-  time: ['clock', 'tz', 'date'],
-  dates: ['countdown', 'holiday'],
-  weather: ['weather', 'weatherDetail', 'rain'],
-  currency: ['currency'],
-  misc: ['todos', 'uptime'],
-};
-
 function statRows(k) {
   const t = L();
   if (k === 'currency') return cfg.currencies.map(([f, to], i) => [`${f}/${to}`, `cur-${i}`]);
@@ -558,33 +563,20 @@ function renderStats() {
   const row = $('#statrow');
   row.innerHTML = '';
   statCache.weather = statCache.hilo = statCache.feels = statCache.uv = statCache.rain = '…';
-  statCache.city = '';
   statCache.holiday = null;
   statCache.cur = {};
-  const t = L();
-  let any = false;
-  for (const [g, keys] of Object.entries(STAT_GROUPS)) {
-    const rows = keys.filter((k) => cfg.stats.includes(k)).flatMap(statRows);
-    if (!rows.length) continue;
-    any = true;
-    const col = document.createElement('div');
-    const h = document.createElement('h3');
-    h.textContent = t.groups[g];
-    if (g === 'weather') { const c = document.createElement('span'); c.className = 'city'; c.id = 'st-city'; h.append(' ', c); }
-    const ul = document.createElement('ul');
-    for (const [label, id] of rows) {
-      const li = document.createElement('li');
-      const b = document.createElement('b');
-      b.textContent = label + ':';
-      const v = document.createElement('span');
-      v.id = 'st-' + id;
-      li.append(b, ' ', v);
-      ul.append(li);
-    }
-    col.append(h, ul);
-    row.append(col);
+  const rows = STAT_KEYS.filter((k) => cfg.stats.includes(k)).flatMap(statRows);
+  for (const [label, id] of rows) {
+    const div = document.createElement('div');
+    div.className = 'stat';
+    const b = document.createElement('b');
+    b.textContent = label + ':';
+    const v = document.createElement('span');
+    v.id = 'st-' + id;
+    div.append(b, ' ', v);
+    row.append(div);
   }
-  $('#stats-box').style.display = any ? '' : 'none';
+  $('#stats-box').style.display = rows.length ? '' : 'none';
   tick();
   if (['weather', 'weatherDetail', 'rain'].some((k) => cfg.stats.includes(k))) loadWeather();
   if (cfg.stats.includes('holiday')) loadHoliday();
@@ -621,7 +613,6 @@ function tick() {
     : `${cfg.lang === 'en' ? h.name : h.localName}, ${new Date(h.date + 'T12:00').toLocaleDateString(t.locale, { day: '2-digit', month: '2-digit' })} (${countdownText(daysUntil(h.date))})`);
   setStat('weather', statCache.weather);
   for (const k of ['hilo', 'feels', 'uv']) setStat(k, statCache[k]);
-  setStat('city', statCache.city ? `(${statCache.city})` : '');
   setStat('rain', statCache.rain);
   cfg.currencies.forEach((_, i) => setStat('cur-' + i, statCache.cur[i] ?? '…'));
 }
@@ -652,8 +643,7 @@ async function loadWeather() {
       return { current, daily };
     });
     const t = L(), c = j.current, d = j.daily, r0 = (x) => Math.round(x);
-    statCache.city = loc.name;
-    statCache.weather = `${r0(c.temperature_2m)}°C, ${t.wmo[c.weather_code] ?? ''}`;
+    statCache.weather = `${r0(c.temperature_2m)}°C, ${t.wmo[c.weather_code] ?? ''} (${loc.name})`;
     statCache.hilo = `${r0(d.temperature_2m_max[0])}°/${r0(d.temperature_2m_min[0])}°`;
     statCache.feels = `${r0(c.apparent_temperature)}°`;
     statCache.uv = String(r0(d.uv_index_max[0]));
@@ -870,6 +860,15 @@ $('#opt-drag').addEventListener('pointerdown', (e) => {
 });
 
 /* ---------- options ---------- */
+const statChecks = () => document.querySelectorAll('#opt-stats > label > input');
+
+// a stat's settings block is visible only while one of its stats is checked
+function syncStatSettings() {
+  const on = new Set([...statChecks()].filter((c) => c.checked).map((c) => c.value));
+  document.querySelectorAll('.sset').forEach((d) => { d.hidden = !d.dataset.for.split(' ').some((k) => on.has(k)); });
+}
+statChecks().forEach((cb) => cb.addEventListener('change', syncStatSettings));
+
 function fillOptions() {
   $('#opt-lang').value = cfg.lang;
   $('#opt-title').value = cfg.title;
@@ -884,13 +883,9 @@ function fillOptions() {
   cdDraft = cfg.countdowns.map((p) => [...p]);
   renderEditors();
   $('#opt-sites').value = JSON.stringify(cfg.sites, null, 2);
-  const box = $('#opt-stats');
-  box.innerHTML = '';
-  for (const [k, label] of Object.entries(L().stats)) {
-    const l = document.createElement('label');
-    l.innerHTML = `<input type="checkbox" value="${k}" ${cfg.stats.includes(k) ? 'checked' : ''}> ${label}`;
-    box.append(l);
-  }
+  statChecks().forEach((cb) => { cb.checked = cfg.stats.includes(cb.value); });
+  document.querySelectorAll('.sset').forEach((d) => { d.open = false; });
+  syncStatSettings();
   $('#opt-msg').textContent = '';
 }
 
@@ -984,7 +979,7 @@ $('#opt-save').addEventListener('click', () => {
     timezones: [...tzDraft],
     countdowns: cdDraft.map((p) => [...p]),
     country: ($('#opt-country').value.trim() || DEFAULTS.country).toUpperCase(),
-    stats: [...document.querySelectorAll('#opt-stats input:checked')].map((i) => i.value),
+    stats: [...statChecks()].filter((c) => c.checked).map((c) => c.value),
     sites,
   });
   fillOptions();
