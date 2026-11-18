@@ -48,9 +48,12 @@ a:hover { color: var(--link-hover); }
 .cat ul { list-style: none; margin: 0; padding: 0; }
 .cat li { line-height: 16px; }
 
-#statrow { display: flex; flex-wrap: wrap; justify-content: space-around; gap: 4px 16px; padding: 8px 6px; }
+#statrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 6px 10px; padding: 6px; }
+#statrow h3 { margin: 0 0 2px; font-size: 12px; font-weight: bold; text-decoration: underline; }
+#statrow h3 .city { font-weight: normal; text-decoration: none; }
+#statrow ul { list-style: none; margin: 0; padding: 0; }
+#statrow li { line-height: 16px; }
 #statrow b { color: var(--text); }
-#statrow .stat { white-space: nowrap; }
 
 #tabs { border-top: 1px solid var(--box-border); text-align: center; margin-top: 6px; font-size: 0; }
 #tabs a {
@@ -326,7 +329,7 @@ const I18N = {
     optTz: 'Fusos extras', optCd: 'Contagem regressiva', cdLabelPh: 'Nome, ex.: Férias', badTz: 'Fuso inválido.', badCd: 'Preencha nome e data.',
     noItems: 'Nenhum item.', today: 'hoje!', past: 'passou',
     days: (n) => `${n} dia${n === 1 ? '' : 's'}`,
-    feels: 'sensação', rainToday: 'hoje',
+    rainToday: 'hoje',
     optCur: 'Cotações', curHint: 'Fiat (USD, EUR, BRL…) e cripto (BTC, ETH, USDT, SOL…). Ex.: USDT/BRL, USDT/BTC.', noPairs: 'Nenhuma cotação.', badPair: 'Código de moeda inválido.', optStats: 'Stats visíveis',
     optSitesFmt: '[{"cat": "Nome", "url": "opcional", "tag": "opcional", "links": [["Título", "https://…"]]}]',
     save: 'Salvar', export: 'Exportar', import: 'Importar', reset: 'Restaurar padrão',
@@ -336,7 +339,8 @@ const I18N = {
     unavailable: 'indisponível',
     greet: ['Boa madrugada', 'Bom dia', 'Boa tarde', 'Boa noite'],
     pending: (n) => `${n} pendente${n === 1 ? '' : 's'}`,
-    statLabels: { holiday: 'Próx. feriado', weatherDetail: 'Máx/Mín', rain: 'Chuva' },
+    statLabels: { holiday: 'Próx. feriado', weather: 'Agora', hilo: 'Máx/Mín', feels: 'Sensação', uv: 'UV', rain: 'Chuva' },
+    groups: { time: 'Horário', dates: 'Datas', weather: 'Clima', currency: 'Cotações', misc: 'Outros' },
     stats: { clock: 'Hora', tz: 'Fusos extras', date: 'Data', countdown: 'Contagem regressiva', holiday: 'Próx. feriado',
       weather: 'Clima', weatherDetail: 'Clima detalhado', rain: 'Chance de chuva', currency: 'Cotações', todos: 'Tarefas', uptime: 'Aberto há' },
     wmo: { 0: 'limpo', 1: 'quase limpo', 2: 'parc. nublado', 3: 'nublado', 45: 'neblina', 48: 'neblina',
@@ -359,7 +363,7 @@ const I18N = {
     optTz: 'Extra time zones', optCd: 'Countdowns', cdLabelPh: 'Name, e.g. Vacation', badTz: 'Invalid time zone.', badCd: 'Fill in name and date.',
     noItems: 'No items.', today: 'today!', past: 'past',
     days: (n) => `${n} day${n === 1 ? '' : 's'}`,
-    feels: 'feels', rainToday: 'today',
+    rainToday: 'today',
     optCur: 'Currency rates', curHint: 'Fiat (USD, EUR, BRL…) and crypto (BTC, ETH, USDT, SOL…). E.g. USDT/BRL, USDT/BTC.', noPairs: 'No rates.', badPair: 'Invalid currency code.', optStats: 'Visible stats',
     optSitesFmt: '[{"cat": "Name", "url": "optional", "tag": "optional", "links": [["Title", "https://…"]]}]',
     save: 'Save', export: 'Export', import: 'Import', reset: 'Restore defaults',
@@ -369,7 +373,8 @@ const I18N = {
     unavailable: 'unavailable',
     greet: ['Good night', 'Good morning', 'Good afternoon', 'Good evening'],
     pending: (n) => `${n} pending`,
-    statLabels: { holiday: 'Next holiday', weatherDetail: 'High/Low', rain: 'Rain' },
+    statLabels: { holiday: 'Next holiday', weather: 'Now', hilo: 'High/Low', feels: 'Feels like', uv: 'UV', rain: 'Rain' },
+    groups: { time: 'Time', dates: 'Dates', weather: 'Weather', currency: 'Rates', misc: 'Other' },
     stats: { clock: 'Time', tz: 'Extra time zones', date: 'Date', countdown: 'Countdowns', holiday: 'Next holiday',
       weather: 'Weather', weatherDetail: 'Weather details', rain: 'Chance of rain', currency: 'Rates', todos: 'Tasks', uptime: 'Open for' },
     wmo: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'fog',
@@ -531,31 +536,55 @@ function greet() {
 /* ---------- stats ---------- */
 const statCache = { weather: '…', weatherDetail: '…', rain: '…', holiday: null, cur: {} };
 
+// stats are shown in columns, one per group, in this order
+const STAT_GROUPS = {
+  time: ['clock', 'tz', 'date'],
+  dates: ['countdown', 'holiday'],
+  weather: ['weather', 'weatherDetail', 'rain'],
+  currency: ['currency'],
+  misc: ['todos', 'uptime'],
+};
+
+function statRows(k) {
+  const t = L();
+  if (k === 'currency') return cfg.currencies.map(([f, to], i) => [`${f}/${to}`, `cur-${i}`]);
+  if (k === 'tz') return cfg.timezones.map((z, i) => [tzName(z), `tz-${i}`]);
+  if (k === 'countdown') return cfg.countdowns.map(([name], i) => [name, `cd-${i}`]);
+  if (k === 'weatherDetail') return ['hilo', 'feels', 'uv'].map((x) => [t.statLabels[x], x]);
+  return [[t.statLabels[k] || t.stats[k], k]];
+}
+
 function renderStats() {
   const row = $('#statrow');
   row.innerHTML = '';
-  statCache.weather = statCache.weatherDetail = statCache.rain = '…';
+  statCache.weather = statCache.hilo = statCache.feels = statCache.uv = statCache.rain = '…';
+  statCache.city = '';
   statCache.holiday = null;
   statCache.cur = {};
   const t = L();
-  const items = [];
-  for (const k of cfg.stats) {
-    if (k === 'currency') cfg.currencies.forEach(([f, to], i) => items.push([`${f}/${to}`, `cur-${i}`]));
-    else if (k === 'tz') cfg.timezones.forEach((z, i) => items.push([tzName(z), `tz-${i}`]));
-    else if (k === 'countdown') cfg.countdowns.forEach(([name], i) => items.push([name, `cd-${i}`]));
-    else items.push([t.statLabels[k] || t.stats[k], k]);
+  let any = false;
+  for (const [g, keys] of Object.entries(STAT_GROUPS)) {
+    const rows = keys.filter((k) => cfg.stats.includes(k)).flatMap(statRows);
+    if (!rows.length) continue;
+    any = true;
+    const col = document.createElement('div');
+    const h = document.createElement('h3');
+    h.textContent = t.groups[g];
+    if (g === 'weather') { const c = document.createElement('span'); c.className = 'city'; c.id = 'st-city'; h.append(' ', c); }
+    const ul = document.createElement('ul');
+    for (const [label, id] of rows) {
+      const li = document.createElement('li');
+      const b = document.createElement('b');
+      b.textContent = label + ':';
+      const v = document.createElement('span');
+      v.id = 'st-' + id;
+      li.append(b, ' ', v);
+      ul.append(li);
+    }
+    col.append(h, ul);
+    row.append(col);
   }
-  $('#stats-box').style.display = items.length ? '' : 'none';
-  for (const [label, id] of items) {
-    const s = document.createElement('span');
-    s.className = 'stat';
-    const b = document.createElement('b');
-    b.textContent = label + ':';
-    const v = document.createElement('span');
-    v.id = 'st-' + id;
-    s.append(b, ' ', v);
-    row.append(s);
-  }
+  $('#stats-box').style.display = any ? '' : 'none';
   tick();
   if (['weather', 'weatherDetail', 'rain'].some((k) => cfg.stats.includes(k))) loadWeather();
   if (cfg.stats.includes('holiday')) loadHoliday();
@@ -591,7 +620,8 @@ function tick() {
   setStat('holiday', !h ? '…' : h.err ? t.unavailable
     : `${cfg.lang === 'en' ? h.name : h.localName}, ${new Date(h.date + 'T12:00').toLocaleDateString(t.locale, { day: '2-digit', month: '2-digit' })} (${countdownText(daysUntil(h.date))})`);
   setStat('weather', statCache.weather);
-  setStat('weatherDetail', statCache.weatherDetail);
+  for (const k of ['hilo', 'feels', 'uv']) setStat(k, statCache[k]);
+  setStat('city', statCache.city ? `(${statCache.city})` : '');
   setStat('rain', statCache.rain);
   cfg.currencies.forEach((_, i) => setStat('cur-' + i, statCache.cur[i] ?? '…'));
 }
@@ -605,7 +635,7 @@ async function cached(key, ttlMs, fn) {
 }
 
 async function loadWeather() {
-  if (!cfg.city) { statCache.weather = statCache.weatherDetail = statCache.rain = '—'; return tick(); }
+  if (!cfg.city) { statCache.weather = statCache.hilo = statCache.feels = statCache.uv = statCache.rain = '—'; return tick(); }
   try {
     const loc = await cached('sp.geo.' + cfg.lang + '.' + cfg.city, 30 * 864e5, async () => {
       const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=1&language=${cfg.lang}&name=${encodeURIComponent(cfg.city)}`);
@@ -622,10 +652,13 @@ async function loadWeather() {
       return { current, daily };
     });
     const t = L(), c = j.current, d = j.daily, r0 = (x) => Math.round(x);
-    statCache.weather = `${r0(c.temperature_2m)}°C ${t.wmo[c.weather_code] ?? ''} (${loc.name})`;
-    statCache.weatherDetail = `${r0(d.temperature_2m_max[0])}°/${r0(d.temperature_2m_min[0])}° · ${t.feels} ${r0(c.apparent_temperature)}° · UV ${r0(d.uv_index_max[0])}`;
+    statCache.city = loc.name;
+    statCache.weather = `${r0(c.temperature_2m)}°C, ${t.wmo[c.weather_code] ?? ''}`;
+    statCache.hilo = `${r0(d.temperature_2m_max[0])}°/${r0(d.temperature_2m_min[0])}°`;
+    statCache.feels = `${r0(c.apparent_temperature)}°`;
+    statCache.uv = String(r0(d.uv_index_max[0]));
     statCache.rain = `${d.precipitation_probability_max[0] ?? 0}% ${t.rainToday}`;
-  } catch (e) { statCache.weather = statCache.weatherDetail = statCache.rain = L().unavailable; }
+  } catch (e) { statCache.weather = statCache.hilo = statCache.feels = statCache.uv = statCache.rain = L().unavailable; }
   tick();
 }
 
