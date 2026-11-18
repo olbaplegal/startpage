@@ -42,8 +42,8 @@ a:hover { color: var(--link-hover); }
 .bd { padding: 6px; }
 
 /* fixed, equal-width columns like 4chan's board list */
-#cols { display: grid; grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr)); column-gap: 0; }
-#cols > .col { padding-right: 8px; min-width: 0; }
+#cols { display: grid; grid-template-columns: repeat(var(--cols, 5), minmax(0, 109px)); column-gap: 0; }
+#cols > .col { padding-right: 6px; min-width: 0; overflow-wrap: break-word; }
 .cat { margin-bottom: 6px; }
 .cat h3 { margin: 0 0 2px; font-size: 12px; font-weight: bold; text-decoration: underline; }
 .cat h3 .tag { color: var(--tag); font-size: 10px; text-decoration: none; display: inline-block; margin-left: 3px; }
@@ -167,7 +167,7 @@ body.frames { padding-left: 200px; }
   #logo h1 { font-size: 40px; }
   .opt { grid-template-columns: 1fr; }
   #tabs a { padding: 3px 8px; }
-  #cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #cols { grid-template-columns: repeat(2, minmax(0, 109px)); }
   body.frames { padding-left: 0; }
   body.frames #frame { position: static; width: auto; border-right: 0; border-bottom: 1px solid var(--box-border); max-height: 40vh; }
 }
