@@ -41,8 +41,10 @@ a:hover { color: var(--link-hover); }
 .hd h2 { margin: 0; font: bold 17px arial, sans-serif; color: var(--hd-text); }
 .bd { padding: 6px; }
 
-#cols { column-gap: 8px; }
-.cat { break-inside: avoid; margin-bottom: 6px; }
+/* fixed, equal-width columns like 4chan's board list */
+#cols { display: grid; grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr)); column-gap: 0; }
+#cols > .col { padding-right: 8px; min-width: 0; }
+.cat { margin-bottom: 6px; }
 .cat h3 { margin: 0 0 2px; font-size: 12px; font-weight: bold; text-decoration: underline; }
 .cat h3 .tag { color: var(--tag); font-size: 10px; text-decoration: none; display: inline-block; margin-left: 3px; }
 .cat ul { list-style: none; margin: 0; padding: 0; }
@@ -165,6 +167,7 @@ body.frames { padding-left: 200px; }
   #logo h1 { font-size: 40px; }
   .opt { grid-template-columns: 1fr; }
   #tabs a { padding: 3px 8px; }
+  #cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   body.frames { padding-left: 0; }
   body.frames #frame { position: static; width: auto; border-right: 0; border-bottom: 1px solid var(--box-border); max-height: 40vh; }
 }
@@ -497,7 +500,7 @@ function applyConfig() {
   applyLang();
   $('#title').textContent = cfg.title;
   document.title = cfg.title;
-  $('#cols').style.columnCount = Math.max(1, Math.min(8, +cfg.cols || 5));
+  $('#cols').style.setProperty('--cols', Math.max(1, Math.min(8, +cfg.cols || 5)));
   $('#frame-title').textContent = cfg.title;
   renderSites();
   renderFrame();
@@ -528,8 +531,12 @@ function renderFrame() {
 }
 
 function renderSites() {
-  const cols = $('#cols');
-  cols.innerHTML = '';
+  const box = $('#cols');
+  box.innerHTML = '';
+  // one div per column; each category goes to the currently shortest column
+  const n = Math.max(1, Math.min(8, +cfg.cols || 5));
+  const cols = Array.from({ length: n }, () => { const c = document.createElement('div'); c.className = 'col'; box.append(c); return c; });
+  const heights = new Array(n).fill(0);
   for (const g of cfg.sites) {
     const div = document.createElement('div');
     div.className = 'cat';
@@ -542,7 +549,9 @@ function renderSites() {
       li.append(siteLink(name, url)); ul.append(li);
     }
     div.append(h, ul);
-    cols.append(div);
+    const i = heights.indexOf(Math.min(...heights));
+    cols[i].append(div);
+    heights[i] += (g.links?.length || 0) + 1.5;
   }
 }
 
