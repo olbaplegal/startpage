@@ -188,7 +188,7 @@ body.frames { padding-left: 200px; }
   </section>
 
   <nav id="tabs">
-    <a data-p="notes" data-i18n="notes"></a><a data-p="todo" data-i18n="todo"></a><a data-p="keys" data-i18n="keys"></a><a id="random" data-i18n="random"></a><a data-p="options" data-i18n="options"></a>
+    <a data-p="notes" data-i18n="notes"></a><a data-p="todo" data-i18n="todo"></a><a data-p="keys" data-i18n="keys"></a><a data-p="options" data-i18n="options"></a>
   </nav>
 
   <div id="panel">
@@ -219,7 +219,7 @@ body.frames { padding-left: 200px; }
   </div>
 
   <footer>
-    <p><a id="f-export" data-i18n="export"></a> • <a id="f-import" data-i18n="import"></a> • <a id="f-top" data-i18n="top"></a></p>
+    <p><a id="f-export" data-i18n="export"></a> • <a id="f-import" data-i18n="import"></a> • <a id="f-top" data-i18n="top"></a> • <a href="https://github.com/olbaplegal/startpage" target="_blank" rel="noopener">About</a></p>
   </footer>
 </div>
 
@@ -277,7 +277,7 @@ const I18N = {
     filter: 'filtro ▼', useFrames: 'Usar Frames', useCatalog: 'Usar Catálogo',
     frRemove: '[Remover Frames]', frHideDirs: '[Esconder Diretórios]', frWorksafe: '[Mostrar Só Worksafe]',
     collapse: 'recolher', close: 'fechar',
-    notes: 'Notas', todo: 'Tarefas', keys: 'Atalhos', random: 'Aleatório', options: 'Options',
+    notes: 'Notas', todo: 'Tarefas', keys: 'Atalhos', options: 'Options',
     autosave: 'salva automaticamente', notesPh: 'Rascunhos, links, lembretes…',
     clearDone: 'limpar concluídas', todoPh: 'Nova tarefa…', add: 'Adicionar', remove: 'remover', nothing: 'Nada pendente.',
     keyPanels: 'abre Notas / Tarefas / Options', keyFrame: 'liga/desliga o frame lateral', keyEsc: 'fecha painel / menu do filtro / Options',
@@ -303,7 +303,7 @@ const I18N = {
     filter: 'filter ▼', useFrames: 'Use Frames', useCatalog: 'Use Catalog',
     frRemove: '[Remove Frames]', frHideDirs: '[Hide Directories]', frWorksafe: '[Show Worksafe Only]',
     collapse: 'collapse', close: 'close',
-    notes: 'Notes', todo: 'Tasks', keys: 'Shortcuts', random: 'Random', options: 'Options',
+    notes: 'Notes', todo: 'Tasks', keys: 'Shortcuts', options: 'Options',
     autosave: 'saved automatically', notesPh: 'Drafts, links, reminders…',
     clearDone: 'clear completed', todoPh: 'New task…', add: 'Add', remove: 'remove', nothing: 'Nothing pending.',
     keyPanels: 'opens Notes / Tasks / Options', keyFrame: 'toggles the side frame', keyEsc: 'closes panel / filter menu / Options',
@@ -573,7 +573,6 @@ for (const id of ['fr-remove', 'fr-hidedirs', 'fr-worksafe']) {
   document.getElementById(id).addEventListener('click', (e) => e.preventDefault());
 }
 
-function go(url) { cfg.newTab ? window.open(url, '_blank', 'noopener') : (location.href = url); }
 
 /* ---------- tabs / panels ---------- */
 function openPanel(p) {
@@ -590,10 +589,6 @@ function openPanel(p) {
 }
 document.querySelectorAll('#tabs a[data-p]').forEach((a) => a.addEventListener('click', () => openPanel(a.dataset.p)));
 
-$('#random').addEventListener('click', () => {
-  const all = cfg.sites.flatMap((g) => g.links || []);
-  if (all.length) go(all[Math.floor(Math.random() * all.length)][1]);
-});
 
 document.addEventListener('keydown', (e) => {
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
