@@ -592,7 +592,9 @@ document.querySelectorAll('#tabs a[data-p]').forEach((a) => a.addEventListener('
 
 document.addEventListener('keydown', (e) => {
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
-  if (e.key === 'Escape' && !typing) {
+  // Esc: first press leaves the field being typed in, the next closes the panel
+  if (e.key === 'Escape' && typing) { document.activeElement.blur(); return; }
+  if (e.key === 'Escape') {
     filterMenu.classList.remove('on');
     if (pop.classList.contains('on')) closeOptions();
     else document.querySelectorAll('#panel .box.on, #tabs a.on').forEach((x) => x.classList.remove('on'));
