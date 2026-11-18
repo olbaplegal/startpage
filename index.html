@@ -35,7 +35,15 @@ a:hover { color: var(--link-hover); }
   margin: 0; font: bold 52px/1 tahoma, arial, sans-serif; letter-spacing: -3px; color: var(--text);
 }
 #greet { margin-top: 6px; font-size: 13px; color: var(--muted); }
-#greet:empty { display: none; }
+#greet:empty, #title:empty, #frame-title:empty { display: none; }
+.withhint { display: flex; align-items: center; gap: 6px; }
+.withhint input { flex: 1; min-width: 0; }
+/* round "i" tip icon; the text shows as a tooltip */
+.hint {
+  flex: none; width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--link); color: var(--link);
+  font: bold 10px/13px georgia, serif; text-align: center; cursor: help; user-select: none;
+}
+.hint:hover, .hint:focus { background: var(--link); color: var(--box-bg); outline: none; }
 
 .box { border: 1px solid var(--box-border); background: var(--box-bg); margin-bottom: 6px; }
 .hd { background: var(--hd-bg); display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; gap: 8px; }
@@ -284,7 +292,7 @@ body.frames { padding-left: 200px; }
   <div class="bd">
     <div class="opt">
       <label class="k" for="opt-title" data-i18n="optTitle"></label>
-      <input id="opt-title" type="text" placeholder="startpage">
+      <span class="withhint"><input id="opt-title" type="text" placeholder="startpage"><span class="hint" tabindex="0" data-i18n-title="titleHint" data-i18n-aria="titleHint">i</span></span>
       <label class="k" for="opt-name" data-i18n="optName"></label>
       <input id="opt-name" type="text" data-i18n-ph="optNamePh">
       <label class="k" for="opt-lang" data-i18n="optLang"></label>
@@ -401,7 +409,7 @@ const I18N = {
     autosave: 'salva automaticamente', notesPh: 'Rascunhos, links, lembretes…',
     clearDone: 'limpar concluídas', todoPh: 'Nova tarefa…', add: 'Adicionar', remove: 'remover', nothing: 'Nada pendente.',
     keyPanels: 'abre Notas / Tarefas / Options', keyFrame: 'liga/desliga o frame lateral', keyEsc: 'fecha painel / menu do filtro / Options',
-    optTitle: 'Título', optName: 'Seu nome (saudação)', optNamePh: 'vazio = sem saudação', optLang: 'Idioma',
+    optTitle: 'Título', titleHint: 'Digite !blank para não mostrar título na página. A aba do navegador continua como "startpage".', optName: 'Seu nome (saudação)', optNamePh: 'vazio = sem saudação', optLang: 'Idioma',
     optTheme: 'Tema', themeY: 'Yotsuba (bege)', themeB: 'Yotsuba B (azul)', themeDark: 'Escuro',
     optNewTab: 'Links em nova aba', optCity: 'Cidade', optCityPh: 'ex: São Paulo',
     settings: 'configurações', optCountry: 'País', optCountryHint: 'código de 2 letras: BR, US, PT…',
@@ -441,7 +449,7 @@ const I18N = {
     autosave: 'saved automatically', notesPh: 'Drafts, links, reminders…',
     clearDone: 'clear completed', todoPh: 'New task…', add: 'Add', remove: 'remove', nothing: 'Nothing pending.',
     keyPanels: 'opens Notes / Tasks / Options', keyFrame: 'toggles the side frame', keyEsc: 'closes panel / filter menu / Options',
-    optTitle: 'Title', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting', optLang: 'Language',
+    optTitle: 'Title', titleHint: 'Type !blank to show no title on the page. The browser tab still reads "startpage".', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting', optLang: 'Language',
     optTheme: 'Theme', themeY: 'Yotsuba (beige)', themeB: 'Yotsuba B (blue)', themeDark: 'Dark',
     optNewTab: 'Open links in new tab', optCity: 'City', optCityPh: 'e.g. London',
     settings: 'settings', optCountry: 'Country', optCountryHint: '2-letter code: BR, US, PT…',
@@ -484,8 +492,11 @@ function applyLang() {
   document.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t[el.dataset.i18nPh]; });
   document.querySelectorAll('[data-i18n-wx]').forEach((el) => { el.textContent = t.wxOpt[el.dataset.i18nWx]; });
   document.querySelectorAll('[data-i18n-stat]').forEach((el) => { el.textContent = t.stats[el.dataset.i18nStat]; });
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t[el.dataset.i18nAria]); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t[el.dataset.i18nTitle]; });
 }
+
+const BLANK_TITLE = '!blank';
 
 // bump when DEFAULTS.sites changes, so saved configs pick up the new list
 const SITES_VERSION = 2;
@@ -580,9 +591,11 @@ const openedAt = Date.now();
 function applyConfig() {
   document.documentElement.dataset.theme = cfg.theme;
   applyLang();
-  $('#title').textContent = cfg.title;
-  document.title = cfg.title;
-  $('#frame-title').textContent = cfg.title;
+  // the title "!blank" hides the page heading; the browser tab keeps a name
+  const shown = cfg.title === BLANK_TITLE ? '' : cfg.title;
+  $('#title').textContent = shown;
+  document.title = shown || DEFAULTS.title;
+  $('#frame-title').textContent = shown;
   renderPic();
   renderSites();
   renderFrame();
