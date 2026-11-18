@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -303,11 +303,6 @@ body.frames { padding-left: 200px; }
       <span class="withhint"><input id="opt-title" type="text" placeholder="startpage"><button type="button" class="hint" aria-expanded="false" data-i18n-aria="tipLabel">i</button><span class="hint-box" role="tooltip" data-i18n="titleHint" hidden></span></span>
       <label class="k" for="opt-name" data-i18n="optName"></label>
       <input id="opt-name" type="text" data-i18n-ph="optNamePh">
-      <label class="k" for="opt-lang" data-i18n="optLang"></label>
-      <select id="opt-lang">
-        <option value="pt">Português</option>
-        <option value="en">English</option>
-      </select>
       <label class="k" for="opt-theme" data-i18n="optTheme"></label>
       <select id="opt-theme">
         <option value="yotsuba" data-i18n="themeY"></option>
@@ -407,47 +402,8 @@ body.frames { padding-left: 200px; }
 </section>
 
 <script>
+// all UI text (English only)
 const I18N = {
-  pt: {
-    locale: 'pt-BR',
-    filter: 'filtro ▼', useFrames: 'Usar Frames',
-    frRemove: '[Remover Frames]',
-    collapse: 'recolher', close: 'fechar',
-    notes: 'Notas', todo: 'Tarefas', keys: 'Atalhos', options: 'Options',
-    autosave: 'salva automaticamente', notesPh: 'Rascunhos, links, lembretes…',
-    clearDone: 'limpar concluídas', todoPh: 'Nova tarefa…', add: 'Adicionar', remove: 'remover', nothing: 'Nada pendente.',
-    keyPanels: 'abre Notas / Tarefas / Options', keyFrame: 'liga/desliga o frame lateral', keyEsc: 'fecha painel / menu do filtro / Options',
-    optTitle: 'Título', tipLabel: 'dica', titleHint: 'Digite !blank para não mostrar título na página.', optName: 'Seu nome (saudação)', optNamePh: 'vazio = sem saudação', optLang: 'Idioma',
-    optTheme: 'Tema', themeY: 'Yotsuba (bege)', themeB: 'Yotsuba B (azul)', themeDark: 'Escuro',
-    optNewTab: 'Links em nova aba', optCity: 'Cidade', optCityPh: 'ex: São Paulo',
-    settings: 'configurações', optCountry: 'País', optCountryHint: 'código de 2 letras: BR, US, PT…',
-    optTz: 'Fusos extras', optCd: 'Contagem regressiva', cdLabelPh: 'Nome, ex.: Férias', badTz: 'Fuso inválido.', badCd: 'Preencha nome e data.',
-    noItems: 'Nenhum item.', today: 'hoje!', past: 'passou',
-    days: (n) => `${n} dia${n === 1 ? '' : 's'}`,
-    rainToday: 'hoje',
-    optCur: 'Cotações', curHint: 'Fiat (USD, EUR, BRL…) e cripto (BTC, ETH, USDT, SOL…). Ex.: USDT/BRL, USDT/BTC.', noPairs: 'Nenhuma cotação.', badPair: 'Código de moeda inválido.', optStats: 'Stats visíveis',
-    optPicSec: 'Exibir imagem', optPic: 'Imagem', optPicPh: 'URL (https://… ou file:///…)', optPicFile: 'Escolher arquivo…', optPicRatio: 'Proporção da imagem',
-    ratioOrig: 'original', picLocal: 'arquivo: ', picTooBig: 'Imagem grande demais para salvar no navegador (máx. ~3 MB).',
-    optSitesFmt: '[{"cat": "Nome", "url": "opcional", "tag": "opcional", "links": [["Título", "https://…"]]}]',
-    save: 'Salvar', export: 'Exportar', import: 'Importar', reset: 'Restaurar padrão',
-    saved: 'Salvo.', restored: 'Padrão restaurado.', imported: 'Importado.',
-    badJson: 'JSON inválido: ', badSites: 'Formato de sites inválido.', importFail: 'Falha ao importar: ',
-    confirmReset: 'Restaurar todas as configurações padrão? (notas e tarefas são mantidas)',
-    unavailable: 'indisponível',
-    greet: ['Boa madrugada', 'Bom dia', 'Boa tarde', 'Boa noite'],
-    pending: (n) => `${n} pendente${n === 1 ? '' : 's'}`,
-    statLabels: { holiday: 'Próx. feriado' },
-    wx: { now: 'Agora', hilo: 'Máx/Mín', feels: 'Sensação', rain: 'Chuva', uv: 'UV', humidity: 'Umidade', wind: 'Vento', sun: 'Sol' },
-    wxOpt: { now: 'Agora (temperatura e céu)', hilo: 'Máxima/mínima', feels: 'Sensação térmica', rain: 'Chance de chuva',
-      uv: 'Índice UV', humidity: 'Umidade', wind: 'Vento', sun: 'Nascer/pôr do sol' },
-    wxShow: 'mostrar:',
-    groups: { time: 'Horário', dates: 'Datas', weather: 'Clima', currency: 'Cotações', misc: 'Outros' },
-    stats: { clock: 'Hora', tz: 'Fusos extras', date: 'Data', countdown: 'Contagem regressiva', holiday: 'Próx. feriado',
-      weather: 'Clima', currency: 'Cotações', todos: 'Tarefas', uptime: 'Aberto há' },
-    wmo: { 0: 'limpo', 1: 'quase limpo', 2: 'parc. nublado', 3: 'nublado', 45: 'neblina', 48: 'neblina',
-      51: 'garoa', 53: 'garoa', 55: 'garoa', 61: 'chuva fraca', 63: 'chuva', 65: 'chuva forte',
-      80: 'pancadas', 81: 'pancadas', 82: 'temporal', 95: 'trovoadas', 96: 'trovoadas', 99: 'trovoadas' },
-  },
   en: {
     locale: 'en-US',
     filter: 'filter ▼', useFrames: 'Use Frames',
@@ -457,7 +413,7 @@ const I18N = {
     autosave: 'saved automatically', notesPh: 'Drafts, links, reminders…',
     clearDone: 'clear completed', todoPh: 'New task…', add: 'Add', remove: 'remove', nothing: 'Nothing pending.',
     keyPanels: 'opens Notes / Tasks / Options', keyFrame: 'toggles the side frame', keyEsc: 'closes panel / filter menu / Options',
-    optTitle: 'Title', tipLabel: 'tip', titleHint: 'Type !blank to show no title on the page.', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting', optLang: 'Language',
+    optTitle: 'Title', tipLabel: 'tip', titleHint: 'Type !blank to show no title on the page.', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting',
     optTheme: 'Theme', themeY: 'Yotsuba (beige)', themeB: 'Yotsuba B (blue)', themeDark: 'Dark',
     optNewTab: 'Open links in new tab', optCity: 'City', optCityPh: 'e.g. London',
     settings: 'settings', optCountry: 'Country', optCountryHint: '2-letter code: BR, US, PT…',
@@ -477,8 +433,8 @@ const I18N = {
     greet: ['Good night', 'Good morning', 'Good afternoon', 'Good evening'],
     pending: (n) => `${n} pending`,
     statLabels: { holiday: 'Next holiday' },
-    wx: { now: 'Now', hilo: 'High/Low', feels: 'Feels like', rain: 'Rain', uv: 'UV', humidity: 'Humidity', wind: 'Wind', sun: 'Sun' },
-    wxOpt: { now: 'Now (temperature and sky)', hilo: 'High/low', feels: 'Feels like', rain: 'Chance of rain',
+    wx: { now: 'Now', hilo: 'Low/High', feels: 'Feels like', rain: 'Rain', uv: 'UV', humidity: 'Humidity', wind: 'Wind', sun: 'Sun' },
+    wxOpt: { now: 'Now (temperature and sky)', hilo: 'Low/high', feels: 'Feels like', rain: 'Chance of rain',
       uv: 'UV index', humidity: 'Humidity', wind: 'Wind', sun: 'Sunrise/sunset' },
     wxShow: 'show:',
     groups: { time: 'Time', dates: 'Dates', weather: 'Weather', currency: 'Rates', misc: 'Other' },
@@ -489,9 +445,9 @@ const I18N = {
       80: 'showers', 81: 'showers', 82: 'storm', 95: 'thunderstorm', 96: 'thunderstorm', 99: 'thunderstorm' },
   },
 };
-const STAT_KEYS = Object.keys(I18N.pt.stats);
-const WX_FIELDS = Object.keys(I18N.pt.wx);
-const L = () => I18N[cfg.lang] || I18N.pt;
+const STAT_KEYS = Object.keys(I18N.en.stats);
+const WX_FIELDS = Object.keys(I18N.en.wx);
+const L = () => I18N.en;
 
 function applyLang() {
   const t = L();
@@ -512,13 +468,12 @@ const SITES_VERSION = 2;
 const DEFAULTS = {
   title: 'startpage',
   name: '',
-  lang: 'pt',
   theme: 'yotsuba',
   newTab: false,
   city: 'São Paulo',
   country: 'BR',
   timezones: ['UTC', 'Asia/Tokyo'],
-  countdowns: [['Ano novo', `${new Date().getFullYear() + 1}-01-01`]],
+  countdowns: [['New Year', `${new Date().getFullYear() + 1}-01-01`]],
   currencies: [['USD', 'BRL'], ['USDT', 'BRL'], ['USDT', 'BTC']],
   stats: ['clock', 'tz', 'date', 'countdown', 'holiday', 'weather', 'currency', 'todos'],
   weatherFields: ['now', 'hilo', 'feels', 'rain', 'uv'],
@@ -770,7 +725,7 @@ function tick() {
   cfg.countdowns.forEach(([, d], i) => setStat('cd-' + i, countdownText(daysUntil(d))));
   const h = statCache.holiday;
   setStat('holiday', !h ? '…' : h.err ? t.unavailable
-    : `${cfg.lang === 'en' ? h.name : h.localName}, ${new Date(h.date + 'T12:00').toLocaleDateString(t.locale, { day: '2-digit', month: '2-digit' })} (${countdownText(daysUntil(h.date))})`);
+    : `${h.name}, ${new Date(h.date + 'T12:00').toLocaleDateString(t.locale, { day: '2-digit', month: '2-digit' })} (${countdownText(daysUntil(h.date))})`);
   for (const f of WX_FIELDS) setStat('wx-' + f, statCache.wx[f] ?? '…');
   setStat('city', statCache.city ? `(${statCache.city})` : '');
   cfg.currencies.forEach((_, i) => setStat('cur-' + i, statCache.cur[i] ?? '…'));
@@ -788,10 +743,10 @@ async function loadWeather() {
   const fill = (v) => { for (const f of WX_FIELDS) statCache.wx[f] = v; };
   if (!cfg.city) { fill('—'); return tick(); }
   try {
-    const loc = await cached('sp.geo.' + cfg.lang + '.' + cfg.city, 30 * 864e5, async () => {
-      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=1&language=${cfg.lang}&name=${encodeURIComponent(cfg.city)}`);
+    const loc = await cached('sp.geo.en.' + cfg.city, 30 * 864e5, async () => {
+      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&name=${encodeURIComponent(cfg.city)}`);
       const j = await r.json();
-      if (!j.results?.length) throw new Error('cidade não encontrada');
+      if (!j.results?.length) throw new Error('city not found');
       const { latitude, longitude, name } = j.results[0];
       return { latitude, longitude, name };
     });
@@ -808,7 +763,7 @@ async function loadWeather() {
     const hm = (iso) => iso.slice(11, 16);
     statCache.wx = {
       now: `${r0(c.temperature_2m)}°C, ${t.wmo[c.weather_code] ?? ''}`,
-      hilo: `${r0(d.temperature_2m_max[0])}°/${r0(d.temperature_2m_min[0])}°`,
+      hilo: `${r0(d.temperature_2m_min[0])}°/${r0(d.temperature_2m_max[0])}°`,
       feels: `${r0(c.apparent_temperature)}°`,
       rain: `${d.precipitation_probability_max[0] ?? 0}% ${t.rainToday}`,
       uv: String(r0(d.uv_index_max[0])),
@@ -828,7 +783,7 @@ async function loadHoliday() {
       const list = await cached(`sp.hol.${cfg.country}.${year}`, 7 * 864e5, async () => {
         const r = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/${cfg.country}`);
         if (!r.ok) throw new Error('bad country');
-        return (await r.json()).map(({ date, localName, name }) => ({ date, localName, name }));
+        return (await r.json()).map(({ date, name }) => ({ date, name }));
       });
       next = list.find((h) => h.date >= today);
       if (next) break;
@@ -1067,7 +1022,6 @@ document.querySelectorAll('.tog').forEach((b) => b.addEventListener('click', () 
 }));
 
 function fillOptions() {
-  $('#opt-lang').value = cfg.lang;
   $('#opt-title').value = cfg.title;
   $('#opt-name').value = cfg.name;
   $('#opt-theme').value = cfg.theme;
@@ -1195,7 +1149,6 @@ $('#opt-save').addEventListener('click', () => {
     ...cfg,
     title: $('#opt-title').value.trim() || DEFAULTS.title,
     name: $('#opt-name').value.trim(),
-    lang: $('#opt-lang').value,
     theme: $('#opt-theme').value,
     newTab: $('#opt-newtab').checked,
     picUrl: picDraft.url,
