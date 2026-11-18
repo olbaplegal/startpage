@@ -114,19 +114,30 @@ button:hover { color: var(--link-hover); }
 .opt .sub { padding-left: 10px; margin-top: -2px; }
 #opt-stats > label { display: block; line-height: 19px; }
 /* per-stat settings: collapsible, only shown while that stat is enabled */
-.sset { margin: 1px 0 5px 22px; padding: 2px 6px 4px; border-left: 2px solid var(--hd-bg); }
-.sset[hidden] { display: none; }
-.sset summary { color: var(--link); font-size: 11px; }
-.sset summary:hover { color: var(--link-hover); }
+.sset { display: none; margin: 1px 0 5px 22px; padding: 4px 6px; border-left: 2px solid var(--hd-bg); }
+.sset.open:not([hidden]) { display: block; }
+.srow { display: flex; align-items: center; line-height: 19px; }
+#opt-stats label.off { opacity: .45; }
+/* arrow that turns from right to down when the settings are expanded */
+.tog { background: none; border: 0; padding: 0 6px; margin-left: 2px; cursor: pointer; line-height: 0; color: var(--link); }
+.tog::before {
+  content: ''; display: inline-block; border: 4px solid transparent; border-left: 6px solid currentColor; border-right: 0;
+  transition: transform .15s ease;
+}
+.tog[aria-expanded="true"]::before { transform: rotate(90deg); }
+.tog:hover { color: var(--link-hover); }
+.tog[hidden] { display: none; }
 /* collapsible headers: arrow on the right, like "filter ▼" */
 details.drop > summary { cursor: pointer; user-select: none; list-style: none; }
 details.drop > summary::-webkit-details-marker { display: none; }
-details.drop > summary::after { content: ' ▼'; font-size: .85em; }
-details.drop[open] > summary::after { content: ' ▲'; }
+details.drop > summary::after {
+  content: ''; display: inline-block; margin-left: 6px; vertical-align: 1px;
+  border: 4px solid transparent; border-left: 6px solid currentColor; border-right: 0; transition: transform .15s ease;
+}
+details.drop[open] > summary::after { transform: rotate(90deg); }
 #stats-det[open] > summary { margin-bottom: 4px; }
 .picrow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .picrow #opt-pic { flex: 1; min-width: 160px; }
-.sset[open] summary { margin-bottom: 4px; }
 #wx-fields { display: grid; grid-template-columns: repeat(2, auto); justify-content: start; gap: 1px 16px; margin-top: 2px; }
 .sset .row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
 /* list editors (rates, time zones, countdowns) */
@@ -303,32 +314,32 @@ body.frames { padding-left: 200px; }
       <details class="full drop" id="stats-det"><summary><b data-i18n="optStats"></b></summary>
       <div id="opt-stats" class="sub">
         <label><input type="checkbox" value="clock"> <span data-i18n-stat="clock"></span></label>
-        <label><input type="checkbox" value="tz"> <span data-i18n-stat="tz"></span></label>
-        <details class="sset drop" data-for="tz"><summary data-i18n="settings"></summary>
+        <div class="srow"><label><input type="checkbox" value="tz"> <span data-i18n-stat="tz"></span></label><button type="button" class="tog" data-for="tz" aria-expanded="false" data-i18n-title="settings"></button></div>
+        <div class="sset" data-for="tz">
           <ul class="elist" id="tz-list"></ul>
           <div class="eadd">
             <input id="tz-in" type="text" list="tz-codes" placeholder="Asia/Tokyo">
             <button id="tz-add-btn" type="button" data-i18n="add"></button>
           </div>
           <datalist id="tz-codes"></datalist>
-        </details>
+        </div>
         <label><input type="checkbox" value="date"> <span data-i18n-stat="date"></span></label>
-        <label><input type="checkbox" value="countdown"> <span data-i18n-stat="countdown"></span></label>
-        <details class="sset drop" data-for="countdown"><summary data-i18n="settings"></summary>
+        <div class="srow"><label><input type="checkbox" value="countdown"> <span data-i18n-stat="countdown"></span></label><button type="button" class="tog" data-for="countdown" aria-expanded="false" data-i18n-title="settings"></button></div>
+        <div class="sset" data-for="countdown">
           <ul class="elist" id="cd-list"></ul>
           <div class="eadd">
             <input id="cd-label" type="text" data-i18n-ph="cdLabelPh">
             <input id="cd-date" type="date">
             <button id="cd-add-btn" type="button" data-i18n="add"></button>
           </div>
-        </details>
-        <label><input type="checkbox" value="holiday"> <span data-i18n-stat="holiday"></span></label>
-        <details class="sset drop" data-for="holiday"><summary data-i18n="settings"></summary>
+        </div>
+        <div class="srow"><label><input type="checkbox" value="holiday"> <span data-i18n-stat="holiday"></span></label><button type="button" class="tog" data-for="holiday" aria-expanded="false" data-i18n-title="settings"></button></div>
+        <div class="sset" data-for="holiday">
           <label class="row"><span data-i18n="optCountry"></span> <input id="opt-country" type="text" maxlength="2" placeholder="BR"></label>
           <div class="muted" data-i18n="optCountryHint"></div>
-        </details>
-        <label><input type="checkbox" value="weather"> <span data-i18n-stat="weather"></span></label>
-        <details class="sset drop" data-for="weather"><summary data-i18n="settings"></summary>
+        </div>
+        <div class="srow"><label><input type="checkbox" value="weather"> <span data-i18n-stat="weather"></span></label><button type="button" class="tog" data-for="weather" aria-expanded="false" data-i18n-title="settings"></button></div>
+        <div class="sset" data-for="weather">
           <label class="row"><span data-i18n="optCity"></span> <input id="opt-city" type="text" data-i18n-ph="optCityPh"></label>
           <div class="muted" data-i18n="wxShow"></div>
           <div id="wx-fields">
@@ -341,9 +352,9 @@ body.frames { padding-left: 200px; }
             <label><input type="checkbox" value="wind"> <span data-i18n-wx="wind"></span></label>
             <label><input type="checkbox" value="sun"> <span data-i18n-wx="sun"></span></label>
           </div>
-        </details>
-        <label><input type="checkbox" value="currency"> <span data-i18n-stat="currency"></span></label>
-        <details class="sset drop" data-for="currency"><summary data-i18n="settings"></summary>
+        </div>
+        <div class="srow"><label><input type="checkbox" value="currency"> <span data-i18n-stat="currency"></span></label><button type="button" class="tog" data-for="currency" aria-expanded="false" data-i18n-title="settings"></button></div>
+        <div class="sset" data-for="currency">
           <ul class="elist" id="cur-list"></ul>
           <div class="eadd">
             <input id="cur-from" class="code" type="text" list="cur-codes" maxlength="5" placeholder="USDT">
@@ -353,7 +364,7 @@ body.frames { padding-left: 200px; }
           </div>
           <div class="muted" data-i18n="curHint"></div>
           <datalist id="cur-codes"></datalist>
-        </details>
+        </div>
         <label><input type="checkbox" value="todos"> <span data-i18n-stat="todos"></span></label>
         <label><input type="checkbox" value="uptime"> <span data-i18n-stat="uptime"></span></label>
       </div>
@@ -988,14 +999,24 @@ $('#opt-drag').addEventListener('pointerdown', (e) => {
 });
 
 /* ---------- options ---------- */
-const statChecks = () => document.querySelectorAll('#opt-stats > label > input');
+const statChecks = () => document.querySelectorAll('#opt-stats > label > input, #opt-stats > .srow > label > input');
 
 // a stat's settings block is visible only while one of its stats is checked
 function syncStatSettings() {
   const on = new Set([...statChecks()].filter((c) => c.checked).map((c) => c.value));
-  document.querySelectorAll('.sset').forEach((d) => { d.hidden = !d.dataset.for.split(' ').some((k) => on.has(k)); });
+  statChecks().forEach((c) => c.parentElement.classList.toggle('off', !c.checked));
+  // settings (and their arrow) only exist for enabled stats
+  document.querySelectorAll('.sset, .tog').forEach((el) => { el.hidden = !on.has(el.dataset.for); });
 }
 statChecks().forEach((cb) => cb.addEventListener('change', syncStatSettings));
+
+function setStatOpen(k, open) {
+  $(`.tog[data-for="${k}"]`).setAttribute('aria-expanded', open);
+  $(`.sset[data-for="${k}"]`).classList.toggle('open', open);
+}
+document.querySelectorAll('.tog').forEach((b) => b.addEventListener('click', () => {
+  setStatOpen(b.dataset.for, b.getAttribute('aria-expanded') !== 'true');
+}));
 
 function fillOptions() {
   $('#opt-lang').value = cfg.lang;
@@ -1016,7 +1037,7 @@ function fillOptions() {
   $('#opt-sites').value = JSON.stringify(cfg.sites, null, 2);
   statChecks().forEach((cb) => { cb.checked = cfg.stats.includes(cb.value); });
   document.querySelectorAll('#wx-fields input').forEach((cb) => { cb.checked = cfg.weatherFields.includes(cb.value); });
-  document.querySelectorAll('.sset').forEach((d) => { d.open = false; });
+  document.querySelectorAll('.tog').forEach((b) => setStatOpen(b.dataset.for, false));
   syncStatSettings();
   $('#opt-msg').textContent = '';
 }
