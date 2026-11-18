@@ -36,14 +36,21 @@ a:hover { color: var(--link-hover); }
 }
 #greet { margin-top: 6px; font-size: 13px; color: var(--muted); }
 #greet:empty, #title:empty, #frame-title:empty { display: none; }
-.withhint { display: flex; align-items: center; gap: 6px; }
-.withhint input { flex: 1; min-width: 0; }
-/* round "i" tip icon; the text shows as a tooltip */
+.withhint { position: relative; display: block; }
+.withhint input { width: 100%; padding-right: 24px; }
+/* round "i" tip icon inside the field; clicking it opens the tip box */
 .hint {
-  flex: none; width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--link); color: var(--link);
-  font: bold 10px/13px georgia, serif; text-align: center; cursor: help; user-select: none;
+  position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+  width: 15px; height: 15px; padding: 0; border-radius: 50%; border: 1px solid var(--link); background: none;
+  color: var(--link); font: bold 10px/13px georgia, serif; text-align: center; cursor: pointer;
 }
-.hint:hover, .hint:focus { background: var(--link); color: var(--box-bg); outline: none; }
+.hint:hover { color: var(--link); }
+.hint-box {
+  position: absolute; right: 0; top: calc(100% + 4px); z-index: 30; max-width: 280px; padding: 5px 7px;
+  background: var(--box-bg); color: var(--text); border: 1px solid var(--box-border);
+  box-shadow: 0 1px 4px rgba(0,0,0,.25); font-size: 11px; line-height: 15px;
+}
+.hint-box[hidden] { display: none; }
 
 .box { border: 1px solid var(--box-border); background: var(--box-bg); margin-bottom: 6px; }
 .hd { background: var(--hd-bg); display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; gap: 8px; }
@@ -292,7 +299,7 @@ body.frames { padding-left: 200px; }
   <div class="bd">
     <div class="opt">
       <label class="k" for="opt-title" data-i18n="optTitle"></label>
-      <span class="withhint"><input id="opt-title" type="text" placeholder="startpage"><span class="hint" tabindex="0" data-i18n-title="titleHint" data-i18n-aria="titleHint">i</span></span>
+      <span class="withhint"><input id="opt-title" type="text" placeholder="startpage"><button type="button" class="hint" aria-expanded="false" data-i18n-aria="tipLabel">i</button><span class="hint-box" role="tooltip" data-i18n="titleHint" hidden></span></span>
       <label class="k" for="opt-name" data-i18n="optName"></label>
       <input id="opt-name" type="text" data-i18n-ph="optNamePh">
       <label class="k" for="opt-lang" data-i18n="optLang"></label>
@@ -409,7 +416,7 @@ const I18N = {
     autosave: 'salva automaticamente', notesPh: 'Rascunhos, links, lembretes…',
     clearDone: 'limpar concluídas', todoPh: 'Nova tarefa…', add: 'Adicionar', remove: 'remover', nothing: 'Nada pendente.',
     keyPanels: 'abre Notas / Tarefas / Options', keyFrame: 'liga/desliga o frame lateral', keyEsc: 'fecha painel / menu do filtro / Options',
-    optTitle: 'Título', titleHint: 'Digite !blank para não mostrar título na página. A aba do navegador continua como "startpage".', optName: 'Seu nome (saudação)', optNamePh: 'vazio = sem saudação', optLang: 'Idioma',
+    optTitle: 'Título', tipLabel: 'dica', titleHint: 'Digite !blank para não mostrar título na página. A aba do navegador continua como "startpage".', optName: 'Seu nome (saudação)', optNamePh: 'vazio = sem saudação', optLang: 'Idioma',
     optTheme: 'Tema', themeY: 'Yotsuba (bege)', themeB: 'Yotsuba B (azul)', themeDark: 'Escuro',
     optNewTab: 'Links em nova aba', optCity: 'Cidade', optCityPh: 'ex: São Paulo',
     settings: 'configurações', optCountry: 'País', optCountryHint: 'código de 2 letras: BR, US, PT…',
@@ -449,7 +456,7 @@ const I18N = {
     autosave: 'saved automatically', notesPh: 'Drafts, links, reminders…',
     clearDone: 'clear completed', todoPh: 'New task…', add: 'Add', remove: 'remove', nothing: 'Nothing pending.',
     keyPanels: 'opens Notes / Tasks / Options', keyFrame: 'toggles the side frame', keyEsc: 'closes panel / filter menu / Options',
-    optTitle: 'Title', titleHint: 'Type !blank to show no title on the page. The browser tab still reads "startpage".', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting', optLang: 'Language',
+    optTitle: 'Title', tipLabel: 'tip', titleHint: 'Type !blank to show no title on the page. The browser tab still reads "startpage".', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting', optLang: 'Language',
     optTheme: 'Theme', themeY: 'Yotsuba (beige)', themeB: 'Yotsuba B (blue)', themeDark: 'Dark',
     optNewTab: 'Open links in new tab', optCity: 'City', optCityPh: 'e.g. London',
     settings: 'settings', optCountry: 'Country', optCountryHint: '2-letter code: BR, US, PT…',
@@ -934,6 +941,7 @@ document.querySelectorAll('#tabs a[data-p]').forEach((a) => a.addEventListener('
 document.addEventListener('keydown', (e) => {
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
   // Esc: first press leaves the field being typed in, the next closes the panel
+  if (e.key === 'Escape' && document.querySelector('.hint[aria-expanded="true"]')) { closeHints(); return; }
   if (e.key === 'Escape' && typing) { document.activeElement.blur(); return; }
   if (e.key === 'Escape') {
     filterMenu.classList.remove('on');
@@ -1019,6 +1027,23 @@ $('#opt-drag').addEventListener('pointerdown', (e) => {
 });
 
 /* ---------- options ---------- */
+// tip boxes next to fields: open on click, close on a second click, outside click or Esc
+function closeHints(except) {
+  document.querySelectorAll('.hint').forEach((b) => {
+    if (b === except) return;
+    b.setAttribute('aria-expanded', 'false');
+    b.nextElementSibling.hidden = true;
+  });
+}
+document.querySelectorAll('.hint').forEach((b) => b.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const open = b.getAttribute('aria-expanded') !== 'true';
+  closeHints(b);
+  b.setAttribute('aria-expanded', String(open));
+  b.nextElementSibling.hidden = !open;
+}));
+document.addEventListener('click', (e) => { if (!e.target.closest('.hint-box')) closeHints(); });
+
 const statChecks = () => document.querySelectorAll('#opt-stats > label > input, #opt-stats > .srow > label > input');
 
 // a stat's settings block is visible only while one of its stats is checked
