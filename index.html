@@ -42,7 +42,8 @@ a:hover { color: var(--link-hover); }
 .bd { padding: 6px; }
 
 /* fixed, equal-width columns like 4chan's board list */
-#cols { display: grid; grid-template-columns: repeat(var(--cols, 5), minmax(0, 109px)); column-gap: 0; }
+/* column count is computed from the box width (see renderSites) so the board is always filled */
+#cols { display: grid; grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr)); column-gap: 0; }
 #cols > .col { padding-right: 6px; min-width: 0; overflow-wrap: break-word; }
 .cat { margin-bottom: 6px; }
 .cat h3 { margin: 0 0 2px; font-size: 12px; font-weight: bold; text-decoration: underline; }
@@ -167,7 +168,6 @@ body.frames { padding-left: 200px; }
   #logo h1 { font-size: 40px; }
   .opt { grid-template-columns: 1fr; }
   #tabs a { padding: 3px 8px; }
-  #cols { grid-template-columns: repeat(2, minmax(0, 109px)); }
   body.frames { padding-left: 0; }
   body.frames #frame { position: static; width: auto; border-right: 0; border-bottom: 1px solid var(--box-border); max-height: 40vh; }
 }
@@ -266,8 +266,6 @@ body.frames { padding-left: 200px; }
         <option value="yotsuba-b" data-i18n="themeB"></option>
         <option value="dark" data-i18n="themeDark"></option>
       </select>
-      <label class="k" for="opt-cols" data-i18n="optCols"></label>
-      <input id="opt-cols" type="number" min="1" max="8">
       <label class="k" for="opt-newtab" data-i18n="optNewTab"></label>
       <span><input id="opt-newtab" type="checkbox"></span>
       <span class="k full"><b data-i18n="optStats"></b></span>
@@ -345,7 +343,7 @@ const I18N = {
     keyPanels: 'abre Notas / Tarefas / Options', keyFrame: 'liga/desliga o frame lateral', keyEsc: 'fecha painel / menu do filtro / Options',
     optTitle: 'Título', optName: 'Seu nome (saudação)', optNamePh: 'vazio = sem saudação', optLang: 'Idioma',
     optTheme: 'Tema', themeY: 'Yotsuba (bege)', themeB: 'Yotsuba B (azul)', themeDark: 'Escuro',
-    optCols: 'Colunas', optNewTab: 'Links em nova aba', optCity: 'Cidade', optCityPh: 'ex: São Paulo',
+    optNewTab: 'Links em nova aba', optCity: 'Cidade', optCityPh: 'ex: São Paulo',
     settings: 'configurações', optCountry: 'País', optCountryHint: 'código de 2 letras: BR, US, PT…',
     optTz: 'Fusos extras', optCd: 'Contagem regressiva', cdLabelPh: 'Nome, ex.: Férias', badTz: 'Fuso inválido.', badCd: 'Preencha nome e data.',
     noItems: 'Nenhum item.', today: 'hoje!', past: 'passou',
@@ -379,7 +377,7 @@ const I18N = {
     keyPanels: 'opens Notes / Tasks / Options', keyFrame: 'toggles the side frame', keyEsc: 'closes panel / filter menu / Options',
     optTitle: 'Title', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting', optLang: 'Language',
     optTheme: 'Theme', themeY: 'Yotsuba (beige)', themeB: 'Yotsuba B (blue)', themeDark: 'Dark',
-    optCols: 'Columns', optNewTab: 'Open links in new tab', optCity: 'City', optCityPh: 'e.g. London',
+    optNewTab: 'Open links in new tab', optCity: 'City', optCityPh: 'e.g. London',
     settings: 'settings', optCountry: 'Country', optCountryHint: '2-letter code: BR, US, PT…',
     optTz: 'Extra time zones', optCd: 'Countdowns', cdLabelPh: 'Name, e.g. Vacation', badTz: 'Invalid time zone.', badCd: 'Fill in name and date.',
     noItems: 'No items.', today: 'today!', past: 'past',
@@ -423,7 +421,6 @@ const DEFAULTS = {
   name: '',
   lang: 'pt',
   theme: 'yotsuba',
-  cols: 5,
   newTab: false,
   city: 'São Paulo',
   country: 'BR',
@@ -500,7 +497,6 @@ function applyConfig() {
   applyLang();
   $('#title').textContent = cfg.title;
   document.title = cfg.title;
-  $('#cols').style.setProperty('--cols', Math.max(1, Math.min(8, +cfg.cols || 5)));
   $('#frame-title').textContent = cfg.title;
   renderSites();
   renderFrame();
@@ -530,11 +526,24 @@ function renderFrame() {
   }
 }
 
+// as many columns as fit (min 109px each, like 4chan), but never more than there are categories
+const MIN_COL = 109;
+function siteColCount() {
+  const w = $('#cols').clientWidth || 738;
+  return Math.max(1, Math.min(cfg.sites.length, Math.floor(w / MIN_COL)));
+}
+function refitSites() {
+  if (siteColCount() !== $('#cols').querySelectorAll(':scope > .col').length) renderSites();
+}
+if (window.ResizeObserver) new ResizeObserver(refitSites).observe($('#cols'));
+else addEventListener('resize', refitSites);
+
 function renderSites() {
   const box = $('#cols');
   box.innerHTML = '';
   // one div per column; each category goes to the currently shortest column
-  const n = Math.max(1, Math.min(8, +cfg.cols || 5));
+  const n = siteColCount();
+  box.style.setProperty('--cols', n);
   const cols = Array.from({ length: n }, () => { const c = document.createElement('div'); c.className = 'col'; box.append(c); return c; });
   const heights = new Array(n).fill(0);
   for (const g of cfg.sites) {
@@ -912,7 +921,6 @@ function fillOptions() {
   $('#opt-title').value = cfg.title;
   $('#opt-name').value = cfg.name;
   $('#opt-theme').value = cfg.theme;
-  $('#opt-cols').value = cfg.cols;
   $('#opt-newtab').checked = cfg.newTab;
   $('#opt-city').value = cfg.city;
   $('#opt-country').value = cfg.country;
@@ -1010,7 +1018,6 @@ $('#opt-save').addEventListener('click', () => {
     name: $('#opt-name').value.trim(),
     lang: $('#opt-lang').value,
     theme: $('#opt-theme').value,
-    cols: +$('#opt-cols').value || DEFAULTS.cols,
     newTab: $('#opt-newtab').checked,
     city: $('#opt-city').value.trim(),
     currencies: curDraft.map((p) => [...p]),
