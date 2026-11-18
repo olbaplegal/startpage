@@ -115,9 +115,10 @@ button:hover { color: var(--link-hover); }
 #opt-stats > label { display: block; line-height: 19px; }
 /* per-stat settings: collapsible, only shown while that stat is enabled */
 .sset { display: none; margin: 1px 0 5px 22px; padding: 4px 6px; border-left: 2px solid var(--hd-bg); }
-.sset.open:not([hidden]) { display: block; }
+.sset.open { display: block; }
+/* settings of an unchecked stat stay visible but look and act disabled */
+.sset.off { opacity: .45; }
 .srow { display: flex; align-items: center; line-height: 19px; }
-#opt-stats label.off { opacity: .45; }
 /* arrow that turns from right to down when the settings are expanded */
 .tog { background: none; border: 0; padding: 0 6px; margin-left: 2px; cursor: pointer; line-height: 0; color: var(--link); }
 .tog::before {
@@ -126,7 +127,8 @@ button:hover { color: var(--link-hover); }
 }
 .tog[aria-expanded="true"]::before { transform: rotate(90deg); }
 .tog:hover { color: var(--link-hover); }
-.tog[hidden] { display: none; }
+.tog:disabled { opacity: .35; cursor: default; }
+.tog:disabled:hover { color: var(--link); }
 /* collapsible headers: arrow on the right, like "filter ▼" */
 details.drop > summary { cursor: pointer; user-select: none; list-style: none; }
 details.drop > summary::-webkit-details-marker { display: none; }
@@ -1004,9 +1006,12 @@ const statChecks = () => document.querySelectorAll('#opt-stats > label > input, 
 // a stat's settings block is visible only while one of its stats is checked
 function syncStatSettings() {
   const on = new Set([...statChecks()].filter((c) => c.checked).map((c) => c.value));
-  statChecks().forEach((c) => c.parentElement.classList.toggle('off', !c.checked));
-  // settings (and their arrow) only exist for enabled stats
-  document.querySelectorAll('.sset, .tog').forEach((el) => { el.hidden = !on.has(el.dataset.for); });
+  document.querySelectorAll('.tog').forEach((b) => { b.disabled = !on.has(b.dataset.for); });
+  document.querySelectorAll('.sset').forEach((el) => {
+    const off = !on.has(el.dataset.for);
+    el.classList.toggle('off', off);
+    el.inert = off;
+  });
 }
 statChecks().forEach((cb) => cb.addEventListener('change', syncStatSettings));
 
