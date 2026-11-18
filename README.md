@@ -52,6 +52,6 @@ Moving the file, switching browsers or clearing site data starts you from scratc
 - Rates: [AwesomeAPI](https://docs.awesomeapi.com.br) and [CoinGecko](https://www.coingecko.com)
 - Holidays: [Nager.Date](https://date.nager.at)
 - Look: shamelessly inspired by 4chan's Yotsuba themes
-- Screenshot art: *Katawa Shoujo* by Four Leaf Studios (CC BY-NC-ND 3.0)
+- Screenshot image: wizard pug by Dave Henniker
 
 Found a bug or have an idea? Open an [issue](https://github.com/olbaplegal/startpage/issues).
