@@ -1,6 +1,7 @@
-# startpage o/
+# startpage
 
-A browser start page that looks like it wandered off a 2000s imageboard and decided to be useful.
+I've been spending a lot of time on 4chan lately, and at some point I thought: why not make my browser start page look like it?
+So here it is, a start page that borrows 4chan's design and decided to be useful.
 One `index.html`, no build step, no server, no framework. Just open it and go.
 
 ![startpage](docs/yotsuba.png)
