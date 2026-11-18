@@ -1,58 +1,59 @@
 # startpage
 
-I've been spending a lot of time on 4chan lately, and at some point I thought: why not make my browser start page look like it?
-So here it is, a start page that borrows 4chan's design and decided to be useful.
-One `index.html`, no build step, no server, no framework. Just open it and go.
+I've been using 4chan a lot lately and wanted a browser start page with the same look, so I made one.
+
+It's a single `index.html`. No build, no server, no dependencies.
 
 ![startpage](docs/yotsuba.png)
 
 ## Themes
 
-Three flavours, with or without a picture in the middle:
-
-| Theme | Plain | With display image |
+| Theme | Without image | With image |
 |---|---|---|
 | Yotsuba | ![](docs/yotsuba.png) | ![](docs/yotsuba-image.png) |
 | Yotsuba B | ![](docs/yotsuba-b.png) | ![](docs/yotsuba-b-image.png) |
 | Dark | ![](docs/dark.png) | ![](docs/dark-image.png) |
 
-## What it does
+## Features
 
-- **Sites** in tidy columns that stretch to fill the board. Edit them as JSON in Options.
-- **Stats**: clock, extra time zones, countdowns, next public holiday, weather (pick what you care about: low/high, feels like, rain, UV, humidity, wind, sunrise/sunset) and currency rates, crypto included (`USDT/BRL`, `USDT/BTC`…).
-- **Notes** and **Tasks** that save as you type.
-- **filter ▼ → Use Frames** for an old-school sidebar with every link.
-- **Options** in a draggable popup. Type `!blank` as the title if you want no title at all.
-- Keyboard: `n` notes, `t` tasks, `o` options, `f` frames, `Esc` to back out.
+- Links grouped by category, edited as JSON in Options. Columns adjust to the width.
+- Stats: time, extra time zones, date, countdowns, next holiday, weather, currency rates (fiat and crypto), pending tasks.
+- Weather fields are selectable: now, low/high, feels like, rain, UV, humidity, wind, sunrise/sunset.
+- Notes and tasks, saved automatically.
+- Optional image between Sites and Stats.
+- Sidebar with all links (filter ▼ → Use Frames).
+- Options open in a draggable popup. Title `!blank` hides the title.
+- Shortcuts: `n` notes, `t` tasks, `o` options, `f` frames, `Esc` close.
 
 | Frames | Options |
 |---|---|
 | ![](docs/frames.png) | ![](docs/options.png) |
 
-## Use it
+## Usage
 
-Point your browser's home page at the file:
+Set the browser home page to:
 
 ```
 file:///path/to/startpage/index.html
 ```
 
-- **Firefox:** Settings → Home → Homepage and new windows → Custom URLs.
-- **Chrome:** Settings → On startup → Open a specific page.
+- Firefox: Settings → Home → Homepage and new windows → Custom URLs.
+- Chrome: Settings → On startup → Open a specific page.
 
-Want it on every new tab too? You'll need an extension such as *New Tab Override*, since browsers won't let a local file be the new tab page on their own.
+Browsers don't allow a local file as the new tab page; for that you need an extension like New Tab Override.
 
-## Your data
+## Data
 
-Everything (settings, notes, tasks, the uploaded image) lives in your browser's `localStorage`. Nothing leaves your machine except the weather, rate and holiday lookups.
-Moving the file, switching browsers or clearing site data starts you from scratch, so hit **Export** now and then and **Import** when you need it back.
+Settings, notes, tasks and the uploaded image are stored in the browser's `localStorage`. Moving the file, changing browsers or clearing site data resets everything, so use Export/Import to back up.
 
-## Thanks
+The only network requests are for weather, rates and holidays.
+
+## Credits
 
 - Weather: [Open-Meteo](https://open-meteo.com)
-- Rates: [AwesomeAPI](https://docs.awesomeapi.com.br) and [CoinGecko](https://www.coingecko.com)
+- Rates: [AwesomeAPI](https://docs.awesomeapi.com.br), [CoinGecko](https://www.coingecko.com)
 - Holidays: [Nager.Date](https://date.nager.at)
-- Look: shamelessly inspired by 4chan's Yotsuba themes
+- Design based on 4chan's Yotsuba themes
 - Screenshot image: wizard pug by Dave Henniker
 
-Found a bug or have an idea? Open an [issue](https://github.com/olbaplegal/startpage/issues).
+Bugs and ideas: [issues](https://github.com/olbaplegal/startpage/issues).
