@@ -1,8 +1,8 @@
 # startpage
 
-I've been using 4chan a lot lately and wanted a browser start page with the same look, so I made one.
+I've been using 4chan quite frequently lately and really liked how comfortable and straightforward its homepage feels. So I decided to create a browser start page inspired by its design
 
-It's a single `index.html`. No build, no server, no dependencies.
+It's a single `index.html`. Just link to your home page and be happy.
 
 ![startpage](docs/yotsuba.png)
 
