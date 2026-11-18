@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start</title>
+<style>
+:root, [data-theme="yotsuba"] {
+  --bg: #ffe; --bg-top: #fca; --text: #800; --muted: #800;
+  --link: #800; --link-hover: #e00; --box-bg: #fff; --box-border: #800;
+  --hd-bg: #fca; --hd-text: #800; --tag: #f00; --input-bg: #fff;
+}
+[data-theme="yotsuba-b"] {
+  --bg: #eef2ff; --bg-top: #d1d5ee; --text: #000; --muted: #34345c;
+  --link: #34345c; --link-hover: #d00; --box-bg: #fff; --box-border: #34345c;
+  --hd-bg: #d1d5ee; --hd-text: #0f0c5d; --tag: #d00; --input-bg: #fff;
+}
+[data-theme="dark"] {
+  --bg: #1d1f21; --bg-top: #282a2e; --text: #c5c8c6; --muted: #c5c8c6;
+  --link: #81a2be; --link-hover: #5f89ac; --box-bg: #1d1f21; --box-border: #444;
+  --hd-bg: #282a2e; --hd-text: #c5c8c6; --tag: #cc6666; --input-bg: #282a2e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--text);
+  background: linear-gradient(var(--bg-top) 0, var(--bg) 200px) var(--bg) no-repeat;
+  font: 12px arial, helvetica, sans-serif; min-height: 100vh;
+}
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--link-hover); }
+#wrap { width: 750px; max-width: calc(100% - 32px); margin: 0 auto; padding-bottom: 40px; }
+
+#logo { text-align: center; padding: 18px 0 14px; }
+#logo h1 {
+  margin: 0; font: bold 52px/1 tahoma, arial, sans-serif; letter-spacing: -3px; color: var(--text);
+}
+#greet { margin-top: 6px; font-size: 13px; color: var(--muted); }
+
+.box { border: 1px solid var(--box-border); background: var(--box-bg); margin-bottom: 6px; }
+.hd { background: var(--hd-bg); display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; gap: 8px; }
+.hd h2 { margin: 0; font: bold 17px arial, sans-serif; color: var(--hd-text); }
+.bd { padding: 6px; }
+
+#cols { column-gap: 8px; }
+.cat { break-inside: avoid; margin-bottom: 6px; }
+.cat h3 { margin: 0 0 2px; font-size: 12px; font-weight: bold; text-decoration: underline; }
+.cat h3 .tag { color: var(--tag); font-size: 10px; text-decoration: none; display: inline-block; margin-left: 3px; }
+.cat ul { list-style: none; margin: 0; padding: 0; }
+.cat li { line-height: 16px; }
+
+#statrow { display: flex; flex-wrap: wrap; justify-content: space-around; gap: 4px 16px; padding: 8px 6px; }
+#statrow b { color: var(--text); }
+#statrow .stat { white-space: nowrap; }
+
+#tabs { border-top: 1px solid var(--box-border); text-align: center; margin-top: 6px; font-size: 0; }
+#tabs a {
+  display: inline-block; font-size: 12px; border: 1px solid var(--box-border); border-top: 0;
+  padding: 3px 12px; margin-left: -1px; background: var(--box-bg); cursor: pointer;
+}
+#tabs a.on { background: var(--hd-bg); font-weight: bold; }
+
+#panel { margin-top: 10px; }
+#panel .box { display: none; }
+#panel .box.on { display: block; }
+textarea, select, input[type=text], input[type=number] {
+  border: 1px solid var(--box-border); background: var(--input-bg); color: var(--text);
+  font: 12px arial, sans-serif; padding: 3px;
+}
+textarea { width: 100%; resize: vertical; }
+#notes { height: 180px; }
+button {
+  font: 12px arial, sans-serif; color: var(--link); background: var(--hd-bg);
+  border: 1px solid var(--box-border); padding: 2px 10px; cursor: pointer;
+}
+button:hover { color: var(--link-hover); }
+.muted { opacity: .7; font-size: 11px; }
+
+#todo-list { list-style: none; padding: 0; margin: 6px 0 0; }
+#todo-list li { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+#todo-list li.done span { text-decoration: line-through; opacity: .6; }
+#todo-list li .x { margin-left: auto; cursor: pointer; color: var(--tag); }
+#todo-form { display: flex; gap: 4px; }
+#todo-form input { flex: 1; }
+
+.opt { display: grid; grid-template-columns: 170px 1fr; gap: 6px 10px; align-items: center; }
+.opt label.k { font-weight: bold; }
+.opt .full { grid-column: 1 / -1; }
+#opt-sites { height: 260px; font-family: monospace; font-size: 11px; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+#opt-msg { margin-left: 6px; }
+
+kbd { border: 1px solid var(--box-border); padding: 0 4px; font-size: 11px; background: var(--hd-bg); }
+.keys td { padding: 2px 10px 2px 0; }
+
+footer { text-align: center; margin-top: 24px; font-size: 11px; }
+footer a { text-decoration: underline; cursor: pointer; }
+footer p { margin: 6px 0; }
+
+/* filter dropdown */
+.filter { position: relative; font-size: 12px; }
+.filter > a { cursor: pointer; user-select: none; }
+#filter-menu {
+  display: none; position: absolute; right: 0; top: 18px; z-index: 10; min-width: 120px;
+  background: var(--box-bg); border: 1px solid #aaa; box-shadow: 0 1px 3px rgba(0,0,0,.2); padding: 3px 0;
+}
+#filter-menu.on { display: block; }
+#filter-menu label { display: flex; align-items: center; gap: 6px; padding: 3px 10px; cursor: pointer; font-size: 13px; color: var(--text); white-space: nowrap; }
+#filter-menu label:hover { background: var(--hd-bg); }
+#filter-menu input { display: none; }
+#filter-menu .ck { width: 10px; display: inline-block; }
+
+/* frame (sidebar) */
+#frame {
+  display: none; position: fixed; left: 0; top: 0; bottom: 0; width: 200px; overflow-y: auto;
+  background: var(--bg); border-right: 1px solid var(--box-border); font-size: 12px; z-index: 5;
+}
+body.frames #frame { display: block; }
+body.frames { padding-left: 200px; }
+#frame .flogo { text-align: center; padding: 10px 0 6px; font: bold 22px tahoma, arial, sans-serif; letter-spacing: -1px; }
+#frame .fopts { padding: 4px 8px 10px; }
+#frame .fopts a { display: block; line-height: 17px; cursor: pointer; }
+#frame .fhd {
+  display: flex; justify-content: space-between; align-items: center; background: var(--hd-bg);
+  border-top: 1px solid var(--box-border); border-bottom: 1px solid var(--box-border); padding: 3px 4px; font-weight: bold;
+}
+#frame .fhd button { padding: 0 5px; line-height: 12px; font-size: 11px; }
+#frame-list { list-style: none; margin: 0; padding: 6px 8px; }
+#frame-list li { line-height: 15px; }
+#frame-list.hidden { display: none; }
+
+@media (max-width: 600px) {
+  #logo h1 { font-size: 40px; }
+  .opt { grid-template-columns: 1fr; }
+  #tabs a { padding: 3px 8px; }
+  body.frames { padding-left: 0; }
+  body.frames #frame { position: static; width: auto; border-right: 0; border-bottom: 1px solid var(--box-border); max-height: 40vh; }
+}
+</style>
+</head>
+<body>
+<aside id="frame">
+  <div class="flogo" id="frame-title">startpage</div>
+  <div class="fopts">
+    <a id="fr-remove">[Remove Frames]</a>
+    <a id="fr-hidedirs">[Hide Directories]</a>
+    <a id="fr-worksafe">[Show Worksafe Only]</a>
+  </div>
+  <div class="fhd"><span>Sites</span><button id="frame-toggle" title="recolher">−</button></div>
+  <ul id="frame-list"></ul>
+</aside>
+<div id="wrap">
+  <header id="logo">
+    <h1 id="title">startpage</h1>
+    <div id="greet"></div>
+  </header>
+
+  <section class="box">
+    <div class="hd">
+      <h2>Sites</h2>
+      <span class="filter">
+        <a id="filter-btn">filter ▼</a>
+        <div id="filter-menu">
+          <label><input type="checkbox" id="use-frames"><span class="ck"></span> Use Frames</label>
+          <label><input type="checkbox" id="use-catalog"><span class="ck"></span> Use Catalog</label>
+        </div>
+      </span>
+    </div>
+    <div class="bd">
+      <div id="cols"></div>
+    </div>
+  </section>
+
+  <section class="box" id="stats-box">
+    <div class="hd"><h2>Stats</h2></div>
+    <div id="statrow"></div>
+  </section>
+
+  <nav id="tabs">
+    <a data-p="notes">Notas</a><a data-p="todo">Tarefas</a><a data-p="keys">Atalhos</a><a id="random">Aleatório</a><a data-p="options">Options</a>
+  </nav>
+
+  <div id="panel">
+    <section class="box" id="p-notes">
+      <div class="hd"><h2>Notas</h2><span class="muted">salva automaticamente</span></div>
+      <div class="bd"><textarea id="notes" placeholder="Rascunhos, links, lembretes…"></textarea></div>
+    </section>
+
+    <section class="box" id="p-todo">
+      <div class="hd"><h2>Tarefas</h2><a id="todo-clear" class="muted" href="#">limpar concluídas</a></div>
+      <div class="bd">
+        <form id="todo-form"><input id="todo-in" type="text" placeholder="Nova tarefa…"><button>Adicionar</button></form>
+        <ul id="todo-list"></ul>
+      </div>
+    </section>
+
+    <section class="box" id="p-keys">
+      <div class="hd"><h2>Atalhos</h2></div>
+      <div class="bd">
+        <table class="keys">
+          <tr><td><kbd>n</kbd> / <kbd>t</kbd> / <kbd>o</kbd></td><td>abre Notas / Tarefas / Options</td></tr>
+          <tr><td><kbd>f</kbd></td><td>liga/desliga o frame lateral</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>fecha painel / menu do filter</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="box" id="p-options">
+      <div class="hd"><h2>Options</h2></div>
+      <div class="bd">
+        <div class="opt">
+          <label class="k" for="opt-title">Título</label>
+          <input id="opt-title" type="text">
+          <label class="k" for="opt-name">Seu nome (saudação)</label>
+          <input id="opt-name" type="text" placeholder="vazio = sem saudação">
+          <label class="k" for="opt-theme">Tema</label>
+          <select id="opt-theme">
+            <option value="yotsuba">Yotsuba (bege)</option>
+            <option value="yotsuba-b">Yotsuba B (azul)</option>
+            <option value="dark">Escuro</option>
+          </select>
+          <label class="k" for="opt-cols">Colunas</label>
+          <input id="opt-cols" type="number" min="1" max="8">
+          <label class="k" for="opt-newtab">Links em nova aba</label>
+          <span><input id="opt-newtab" type="checkbox"></span>
+          <label class="k" for="opt-city">Cidade (clima)</label>
+          <input id="opt-city" type="text" placeholder="ex: São Paulo">
+          <label class="k" for="opt-cur">Moeda (cotação)</label>
+          <select id="opt-cur">
+            <option value="USD-BRL">USD → BRL</option>
+            <option value="EUR-BRL">EUR → BRL</option>
+            <option value="BTC-BRL">BTC → BRL</option>
+          </select>
+          <span class="k"><b>Stats visíveis</b></span>
+          <span id="opt-stats"></span>
+          <label class="k full" for="opt-sites">Sites (JSON) <span class="muted">— <code>[{"cat": "Nome", "url": "opcional", "tag": "opcional", "links": [["Título", "https://…"]]}]</code></span></label>
+          <textarea id="opt-sites" class="full" spellcheck="false"></textarea>
+        </div>
+        <div class="btns">
+          <button id="opt-save">Salvar</button>
+          <button id="opt-export">Exportar</button>
+          <button id="opt-import">Importar</button>
+          <button id="opt-reset">Restaurar padrão</button>
+          <span id="opt-msg"></span>
+        </div>
+        <input id="import-file" type="file" accept="application/json" hidden>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p><a id="f-export">Exportar</a> • <a id="f-import">Importar</a> • <a id="f-top">Topo</a></p>
+  </footer>
+</div>
+
+<script>
+const STAT_DEFS = {
+  clock:   'Hora',
+  date:    'Data',
+  weather: 'Clima',
+  currency:'Cotação',
+  todos:   'Tarefas',
+  uptime:  'Aberto há',
+};
+
+// bump when DEFAULTS.sites changes, so saved configs pick up the new list
+const SITES_VERSION = 2;
+
+const DEFAULTS = {
+  title: 'startpage',
+  name: '',
+  theme: 'yotsuba',
+  cols: 5,
+  newTab: false,
+  city: 'São Paulo',
+  currency: 'USD-BRL',
+  stats: ['clock', 'date', 'weather', 'currency', 'todos'],
+  useFrames: false,
+  useCatalog: false,
+  sitesVersion: SITES_VERSION,
+  sites: [
+    { cat: 'Reddit', url: 'https://www.reddit.com', links: [
+      ['r/visualnovels', 'https://www.reddit.com/r/visualnovels/'],
+      ['r/linuxmemes', 'https://www.reddit.com/r/linuxmemes/'],
+      ['r/linuxsucks', 'https://www.reddit.com/r/linuxsucks/'],
+      ['r/unixporn', 'https://www.reddit.com/r/unixporn/'],
+    ]},
+    { cat: '4chan', url: 'https://www.4chan.org', links: [
+      ['/lit/ - Literature', 'https://boards.4chan.org/lit/'],
+      ['/a/ - Anime & Manga', 'https://boards.4chan.org/a/'],
+      ['/tv/ - Television & Film', 'https://boards.4chan.org/tv/'],
+    ]},
+    { cat: 'Mídia', links: [
+      ['YouTube', 'https://www.youtube.com'],
+      ['Twitch', 'https://www.twitch.tv'],
+    ]},
+    { cat: 'Comunicação', links: [
+      ['Gmail', 'https://mail.google.com'],
+      ['WhatsApp', 'https://web.whatsapp.com'],
+      ['LinkedIn', 'https://www.linkedin.com'],
+    ]},
+    { cat: 'Dev', links: [
+      ['GitHub', 'https://github.com'],
+      ['ArchWiki', 'https://wiki.archlinux.org'],
+    ]},
+    { cat: 'Prática', links: [
+      ['Chess', 'https://www.chess.com'],
+      ['Monkeytype', 'https://monkeytype.com'],
+    ]},
+  ],
+};
+
+const $ = (s) => document.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+let cfg = { ...structuredClone(DEFAULTS), ...store.get('sp.config', {}) };
+cfg.stats = cfg.stats.filter((k) => k in STAT_DEFS);
+if (cfg.sitesVersion !== SITES_VERSION) {
+  cfg.sites = structuredClone(DEFAULTS.sites);
+  cfg.sitesVersion = SITES_VERSION;
+  store.set('sp.config', cfg);
+}
+let todos = store.get('sp.todos', []);
+const openedAt = Date.now();
+
+/* ---------- render ---------- */
+function applyConfig() {
+  document.documentElement.dataset.theme = cfg.theme;
+  $('#title').textContent = cfg.title;
+  document.title = cfg.title;
+  $('#cols').style.columnCount = Math.max(1, Math.min(8, +cfg.cols || 5));
+  $('#frame-title').textContent = cfg.title;
+  renderSites();
+  renderFrame();
+  renderStats();
+  greet();
+  document.body.classList.toggle('frames', cfg.useFrames);
+  syncFilterMenu();
+}
+
+function siteLink(name, url) {
+  const a = document.createElement('a');
+  a.textContent = name; a.href = url;
+  if (cfg.newTab) { a.target = '_blank'; a.rel = 'noopener'; }
+  return a;
+}
+
+function renderFrame() {
+  const ul = $('#frame-list');
+  ul.innerHTML = '';
+  for (const g of cfg.sites) {
+    for (const [name, url] of g.links || []) {
+      const li = document.createElement('li');
+      li.append(siteLink(`${g.cat} - ${name}`, url));
+      ul.append(li);
+    }
+  }
+}
+
+function renderSites() {
+  const cols = $('#cols');
+  cols.innerHTML = '';
+  for (const g of cfg.sites) {
+    const div = document.createElement('div');
+    div.className = 'cat';
+    const h = document.createElement('h3');
+    if (g.url) h.append(siteLink(g.cat, g.url)); else h.textContent = g.cat;
+    if (g.tag) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = `(${g.tag})`; h.append(t); }
+    const ul = document.createElement('ul');
+    for (const [name, url] of g.links || []) {
+      const li = document.createElement('li');
+      li.append(siteLink(name, url)); ul.append(li);
+    }
+    div.append(h, ul);
+    cols.append(div);
+  }
+}
+
+function greet() {
+  const h = new Date().getHours();
+  const p = h < 5 ? 'Boa madrugada' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+  $('#greet').textContent = cfg.name ? `${p}, ${cfg.name}.` : '';
+}
+
+/* ---------- stats ---------- */
+const statCache = { weather: '…', currency: '…' };
+
+function renderStats() {
+  const row = $('#statrow');
+  row.innerHTML = '';
+  $('#stats-box').style.display = cfg.stats.length ? '' : 'none';
+  for (const k of cfg.stats) {
+    const s = document.createElement('span');
+    s.className = 'stat';
+    s.innerHTML = `<b>${STAT_DEFS[k]}:</b> <span id="st-${k}"></span>`;
+    row.append(s);
+  }
+  tick();
+  if (cfg.stats.includes('weather')) loadWeather();
+  if (cfg.stats.includes('currency')) loadCurrency();
+}
+
+function setStat(k, v) { const el = document.getElementById('st-' + k); if (el) el.textContent = v; }
+
+function tick() {
+  const now = new Date();
+  setStat('clock', now.toLocaleTimeString('pt-BR'));
+  setStat('date', now.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' }));
+  const pend = todos.filter((t) => !t.done).length;
+  setStat('todos', `${pend} pendente${pend === 1 ? '' : 's'}`);
+  const m = Math.floor((Date.now() - openedAt) / 60000);
+  setStat('uptime', m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`);
+  setStat('weather', statCache.weather);
+  setStat('currency', statCache.currency);
+}
+
+const WMO = { 0: 'limpo', 1: 'quase limpo', 2: 'parc. nublado', 3: 'nublado', 45: 'neblina', 48: 'neblina',
+  51: 'garoa', 53: 'garoa', 55: 'garoa', 61: 'chuva fraca', 63: 'chuva', 65: 'chuva forte',
+  80: 'pancadas', 81: 'pancadas', 82: 'temporal', 95: 'trovoadas', 96: 'trovoadas', 99: 'trovoadas' };
+
+async function cached(key, ttlMs, fn) {
+  const c = store.get(key);
+  if (c && Date.now() - c.t < ttlMs) return c.v;
+  const v = await fn();
+  store.set(key, { t: Date.now(), v });
+  return v;
+}
+
+async function loadWeather() {
+  if (!cfg.city) { statCache.weather = '—'; return tick(); }
+  try {
+    const loc = await cached('sp.geo.' + cfg.city, 30 * 864e5, async () => {
+      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=1&language=pt&name=${encodeURIComponent(cfg.city)}`);
+      const j = await r.json();
+      if (!j.results?.length) throw new Error('cidade não encontrada');
+      const { latitude, longitude, name } = j.results[0];
+      return { latitude, longitude, name };
+    });
+    const w = await cached('sp.wx.' + cfg.city, 15 * 60e3, async () => {
+      const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,weather_code&timezone=auto`);
+      return (await r.json()).current;
+    });
+    statCache.weather = `${Math.round(w.temperature_2m)}°C ${WMO[w.weather_code] ?? ''} (${loc.name})`;
+  } catch (e) { statCache.weather = 'indisponível'; }
+  tick();
+}
+
+async function loadCurrency() {
+  try {
+    const v = await cached('sp.cur.' + cfg.currency, 30 * 60e3, async () => {
+      const r = await fetch(`https://economia.awesomeapi.com.br/json/last/${cfg.currency}`);
+      const j = await r.json();
+      return j[cfg.currency.replace('-', '')];
+    });
+    const [from] = cfg.currency.split('-');
+    const pct = parseFloat(v.pctChange);
+    const val = parseFloat(v.bid).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    statCache.currency = `${from} ${val} (${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%)`;
+  } catch (e) { statCache.currency = 'indisponível'; }
+  tick();
+}
+
+setInterval(tick, 1000);
+setInterval(greet, 60e3);
+
+/* ---------- filter menu / frame ---------- */
+const filterMenu = $('#filter-menu');
+
+function syncFilterMenu() {
+  for (const [id, key] of [['use-frames', 'useFrames'], ['use-catalog', 'useCatalog']]) {
+    const cb = document.getElementById(id);
+    cb.checked = !!cfg[key];
+    cb.nextElementSibling.textContent = cb.checked ? '✔' : '';
+  }
+}
+
+function setFlag(key, val) {
+  cfg[key] = val;
+  store.set('sp.config', cfg);
+  document.body.classList.toggle('frames', cfg.useFrames);
+  syncFilterMenu();
+}
+
+$('#filter-btn').addEventListener('click', (e) => { e.stopPropagation(); filterMenu.classList.toggle('on'); });
+filterMenu.addEventListener('click', (e) => e.stopPropagation());
+document.addEventListener('click', () => filterMenu.classList.remove('on'));
+$('#use-frames').addEventListener('change', (e) => setFlag('useFrames', e.target.checked));
+$('#use-catalog').addEventListener('change', (e) => setFlag('useCatalog', e.target.checked)); // TODO: catalog view
+
+$('#frame-toggle').addEventListener('click', () => {
+  const hidden = $('#frame-list').classList.toggle('hidden');
+  $('#frame-toggle').textContent = hidden ? '+' : '−';
+});
+
+// frame options: placeholders, not implemented yet
+for (const id of ['fr-remove', 'fr-hidedirs', 'fr-worksafe']) {
+  document.getElementById(id).addEventListener('click', (e) => e.preventDefault());
+}
+
+function go(url) { cfg.newTab ? window.open(url, '_blank', 'noopener') : (location.href = url); }
+
+/* ---------- tabs / panels ---------- */
+function openPanel(p) {
+  const already = $(`#p-${p}`).classList.contains('on');
+  document.querySelectorAll('#panel .box').forEach((b) => b.classList.remove('on'));
+  document.querySelectorAll('#tabs a').forEach((a) => a.classList.remove('on'));
+  if (already) return;
+  $(`#p-${p}`).classList.add('on');
+  $(`#tabs a[data-p="${p}"]`).classList.add('on');
+  if (p === 'options') fillOptions();
+  if (p === 'notes') $('#notes').focus();
+  if (p === 'todo') $('#todo-in').focus();
+  $(`#p-${p}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+document.querySelectorAll('#tabs a[data-p]').forEach((a) => a.addEventListener('click', () => openPanel(a.dataset.p)));
+
+$('#random').addEventListener('click', () => {
+  const all = cfg.sites.flatMap((g) => g.links || []);
+  if (all.length) go(all[Math.floor(Math.random() * all.length)][1]);
+});
+
+document.addEventListener('keydown', (e) => {
+  const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if (e.key === 'Escape' && !typing) {
+    filterMenu.classList.remove('on');
+    document.querySelectorAll('#panel .box.on, #tabs a.on').forEach((x) => x.classList.remove('on'));
+  }
+  if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'f') { e.preventDefault(); setFlag('useFrames', !cfg.useFrames); }
+  else if (e.key === 'n') { e.preventDefault(); openPanel('notes'); }
+  else if (e.key === 't') { e.preventDefault(); openPanel('todo'); }
+  else if (e.key === 'o') { e.preventDefault(); openPanel('options'); }
+});
+
+/* ---------- notes ---------- */
+const notes = $('#notes');
+notes.value = store.get('sp.notes', '');
+notes.addEventListener('input', () => store.set('sp.notes', notes.value));
+
+/* ---------- todo ---------- */
+function saveTodos() { store.set('sp.todos', todos); renderTodos(); tick(); }
+function renderTodos() {
+  const ul = $('#todo-list');
+  ul.innerHTML = '';
+  todos.forEach((t, i) => {
+    const li = document.createElement('li');
+    if (t.done) li.className = 'done';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.checked = t.done;
+    cb.onchange = () => { todos[i].done = cb.checked; saveTodos(); };
+    const sp = document.createElement('span'); sp.textContent = t.text;
+    const x = document.createElement('span'); x.className = 'x'; x.textContent = '[x]'; x.title = 'remover';
+    x.onclick = () => { todos.splice(i, 1); saveTodos(); };
+    li.append(cb, sp, x); ul.append(li);
+  });
+  if (!todos.length) ul.innerHTML = '<li class="muted">Nada pendente.</li>';
+}
+$('#todo-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const v = $('#todo-in').value.trim();
+  if (!v) return;
+  todos.push({ text: v, done: false });
+  $('#todo-in').value = '';
+  saveTodos();
+});
+$('#todo-clear').addEventListener('click', (e) => { e.preventDefault(); todos = todos.filter((t) => !t.done); saveTodos(); });
+
+/* ---------- options ---------- */
+function fillOptions() {
+  $('#opt-title').value = cfg.title;
+  $('#opt-name').value = cfg.name;
+  $('#opt-theme').value = cfg.theme;
+  $('#opt-cols').value = cfg.cols;
+  $('#opt-newtab').checked = cfg.newTab;
+  $('#opt-city').value = cfg.city;
+  $('#opt-cur').value = cfg.currency;
+  $('#opt-sites').value = JSON.stringify(cfg.sites, null, 2);
+  const box = $('#opt-stats');
+  box.innerHTML = '';
+  for (const [k, label] of Object.entries(STAT_DEFS)) {
+    const l = document.createElement('label');
+    l.style.marginRight = '10px';
+    l.innerHTML = `<input type="checkbox" value="${k}" ${cfg.stats.includes(k) ? 'checked' : ''}> ${label}`;
+    box.append(l);
+  }
+  $('#opt-msg').textContent = '';
+}
+
+function msg(t) { $('#opt-msg').textContent = t; setTimeout(() => { $('#opt-msg').textContent = ''; }, 3000); }
+
+function validSites(s) {
+  return Array.isArray(s) && s.every((g) => typeof g.cat === 'string' && Array.isArray(g.links)
+    && g.links.every((l) => Array.isArray(l) && l.length === 2 && l.every((x) => typeof x === 'string')));
+}
+
+function commit(next) {
+  cfg = next;
+  store.set('sp.config', cfg);
+  applyConfig();
+}
+
+$('#opt-save').addEventListener('click', () => {
+  let sites;
+  try { sites = JSON.parse($('#opt-sites').value); } catch (e) { return msg('JSON inválido: ' + e.message); }
+  if (!validSites(sites)) return msg('Formato de sites inválido.');
+  commit({
+    ...cfg,
+    title: $('#opt-title').value.trim() || DEFAULTS.title,
+    name: $('#opt-name').value.trim(),
+    theme: $('#opt-theme').value,
+    cols: +$('#opt-cols').value || DEFAULTS.cols,
+    newTab: $('#opt-newtab').checked,
+    city: $('#opt-city').value.trim(),
+    currency: $('#opt-cur').value,
+    stats: [...document.querySelectorAll('#opt-stats input:checked')].map((i) => i.value),
+    sites,
+  });
+  msg('Salvo.');
+});
+
+$('#opt-reset').addEventListener('click', () => {
+  if (!confirm('Restaurar todas as configurações padrão? (notas e tarefas são mantidas)')) return;
+  commit(structuredClone(DEFAULTS));
+  fillOptions();
+  msg('Padrão restaurado.');
+});
+
+function exportAll() {
+  const data = { config: cfg, notes: notes.value, todos };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+  a.download = 'startpage-backup.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importAll() { $('#import-file').click(); }
+$('#import-file').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (d.config) {
+      if (d.config.sites && !validSites(d.config.sites)) throw new Error('sites inválidos');
+      commit({ ...structuredClone(DEFAULTS), ...d.config });
+    }
+    if (typeof d.notes === 'string') { notes.value = d.notes; store.set('sp.notes', d.notes); }
+    if (Array.isArray(d.todos)) { todos = d.todos; saveTodos(); }
+    if ($('#p-options').classList.contains('on')) fillOptions();
+    msg('Importado.');
+  } catch (err) { alert('Falha ao importar: ' + err.message); }
+  e.target.value = '';
+});
+$('#opt-export').addEventListener('click', exportAll);
+$('#opt-import').addEventListener('click', importAll);
+$('#f-export').addEventListener('click', exportAll);
+$('#f-import').addEventListener('click', importAll);
+$('#f-top').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ---------- init ---------- */
+applyConfig();
+renderTodos();
+</script>
+</body>
+</html>
