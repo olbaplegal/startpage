@@ -54,6 +54,11 @@ a:hover { color: var(--link-hover); }
 .cat ul { list-style: none; margin: 0; padding: 0; }
 .cat li { line-height: 16px; }
 
+/* picture frame between Sites and Stats (test) */
+/* optional picture between Sites and Stats (Options > Image) */
+#pic-box { margin-bottom: 6px; border: 1px solid var(--box-border); }
+#pic-box[hidden] { display: none; }
+#pic-box img { display: block; width: 100%; object-fit: cover; }
 #statrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 6px 10px; padding: 6px; }
 #statrow h3 { margin: 0 0 2px; font-size: 12px; font-weight: bold; text-decoration: underline; }
 #statrow h3 .city { font-weight: normal; text-decoration: none; }
@@ -111,8 +116,16 @@ button:hover { color: var(--link-hover); }
 /* per-stat settings: collapsible, only shown while that stat is enabled */
 .sset { margin: 1px 0 5px 22px; padding: 2px 6px 4px; border-left: 2px solid var(--hd-bg); }
 .sset[hidden] { display: none; }
-.sset summary { cursor: pointer; color: var(--link); font-size: 11px; user-select: none; }
+.sset summary { color: var(--link); font-size: 11px; }
 .sset summary:hover { color: var(--link-hover); }
+/* collapsible headers: arrow on the right, like "filter ▼" */
+details.drop > summary { cursor: pointer; user-select: none; list-style: none; }
+details.drop > summary::-webkit-details-marker { display: none; }
+details.drop > summary::after { content: ' ▼'; font-size: .85em; }
+details.drop[open] > summary::after { content: ' ▲'; }
+#stats-det[open] > summary { margin-bottom: 4px; }
+.picrow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.picrow #opt-pic { flex: 1; min-width: 160px; }
 .sset[open] summary { margin-bottom: 4px; }
 #wx-fields { display: grid; grid-template-columns: repeat(2, auto); justify-content: start; gap: 1px 16px; margin-top: 2px; }
 .sset .row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
@@ -207,6 +220,10 @@ body.frames { padding-left: 200px; }
     </div>
   </section>
 
+  <section id="pic-box" hidden>
+    <img id="pic" alt="">
+  </section>
+
   <section class="box" id="stats-box">
     <div class="hd"><h2>Stats</h2></div>
     <div id="statrow"></div>
@@ -269,11 +286,25 @@ body.frames { padding-left: 200px; }
       </select>
       <label class="k" for="opt-newtab" data-i18n="optNewTab"></label>
       <span><input id="opt-newtab" type="checkbox"></span>
-      <span class="k full"><b data-i18n="optStats"></b></span>
-      <div id="opt-stats" class="full sub">
+      <label class="k" for="opt-pic" data-i18n="optPic"></label>
+      <div class="picrow">
+        <input id="opt-pic" type="text" data-i18n-ph="optPicPh">
+        <button id="opt-pic-file" type="button" data-i18n="optPicFile"></button>
+        <button id="opt-pic-clear" type="button" data-i18n="remove"></button>
+        <input id="pic-file" type="file" accept="image/*" hidden>
+      </div>
+      <label class="k" for="opt-pic-ratio" data-i18n="optPicRatio"></label>
+      <select id="opt-pic-ratio">
+        <option value="" data-i18n="ratioOrig"></option>
+        <option value="16 / 9">16:9</option>
+        <option value="4 / 3">4:3</option>
+        <option value="1 / 1">1:1</option>
+      </select>
+      <details class="full drop" id="stats-det"><summary><b data-i18n="optStats"></b></summary>
+      <div id="opt-stats" class="sub">
         <label><input type="checkbox" value="clock"> <span data-i18n-stat="clock"></span></label>
         <label><input type="checkbox" value="tz"> <span data-i18n-stat="tz"></span></label>
-        <details class="sset" data-for="tz"><summary data-i18n="settings"></summary>
+        <details class="sset drop" data-for="tz"><summary data-i18n="settings"></summary>
           <ul class="elist" id="tz-list"></ul>
           <div class="eadd">
             <input id="tz-in" type="text" list="tz-codes" placeholder="Asia/Tokyo">
@@ -283,7 +314,7 @@ body.frames { padding-left: 200px; }
         </details>
         <label><input type="checkbox" value="date"> <span data-i18n-stat="date"></span></label>
         <label><input type="checkbox" value="countdown"> <span data-i18n-stat="countdown"></span></label>
-        <details class="sset" data-for="countdown"><summary data-i18n="settings"></summary>
+        <details class="sset drop" data-for="countdown"><summary data-i18n="settings"></summary>
           <ul class="elist" id="cd-list"></ul>
           <div class="eadd">
             <input id="cd-label" type="text" data-i18n-ph="cdLabelPh">
@@ -292,12 +323,12 @@ body.frames { padding-left: 200px; }
           </div>
         </details>
         <label><input type="checkbox" value="holiday"> <span data-i18n-stat="holiday"></span></label>
-        <details class="sset" data-for="holiday"><summary data-i18n="settings"></summary>
+        <details class="sset drop" data-for="holiday"><summary data-i18n="settings"></summary>
           <label class="row"><span data-i18n="optCountry"></span> <input id="opt-country" type="text" maxlength="2" placeholder="BR"></label>
           <div class="muted" data-i18n="optCountryHint"></div>
         </details>
         <label><input type="checkbox" value="weather"> <span data-i18n-stat="weather"></span></label>
-        <details class="sset" data-for="weather"><summary data-i18n="settings"></summary>
+        <details class="sset drop" data-for="weather"><summary data-i18n="settings"></summary>
           <label class="row"><span data-i18n="optCity"></span> <input id="opt-city" type="text" data-i18n-ph="optCityPh"></label>
           <div class="muted" data-i18n="wxShow"></div>
           <div id="wx-fields">
@@ -312,7 +343,7 @@ body.frames { padding-left: 200px; }
           </div>
         </details>
         <label><input type="checkbox" value="currency"> <span data-i18n-stat="currency"></span></label>
-        <details class="sset" data-for="currency"><summary data-i18n="settings"></summary>
+        <details class="sset drop" data-for="currency"><summary data-i18n="settings"></summary>
           <ul class="elist" id="cur-list"></ul>
           <div class="eadd">
             <input id="cur-from" class="code" type="text" list="cur-codes" maxlength="5" placeholder="USDT">
@@ -326,6 +357,7 @@ body.frames { padding-left: 200px; }
         <label><input type="checkbox" value="todos"> <span data-i18n-stat="todos"></span></label>
         <label><input type="checkbox" value="uptime"> <span data-i18n-stat="uptime"></span></label>
       </div>
+      </details>
       <label class="k full" for="opt-sites">Sites (JSON) <span class="muted">— <code data-i18n="optSitesFmt"></code></span></label>
       <textarea id="opt-sites" class="full" spellcheck="false"></textarea>
     </div>
@@ -360,6 +392,8 @@ const I18N = {
     days: (n) => `${n} dia${n === 1 ? '' : 's'}`,
     rainToday: 'hoje',
     optCur: 'Cotações', curHint: 'Fiat (USD, EUR, BRL…) e cripto (BTC, ETH, USDT, SOL…). Ex.: USDT/BRL, USDT/BTC.', noPairs: 'Nenhuma cotação.', badPair: 'Código de moeda inválido.', optStats: 'Stats visíveis',
+    optPic: 'Imagem', optPicPh: 'URL (https://… ou file:///…)', optPicFile: 'Escolher arquivo…', optPicRatio: 'Proporção da imagem',
+    ratioOrig: 'original', picLocal: 'arquivo: ', picTooBig: 'Imagem grande demais para salvar no navegador (máx. ~3 MB).',
     optSitesFmt: '[{"cat": "Nome", "url": "opcional", "tag": "opcional", "links": [["Título", "https://…"]]}]',
     save: 'Salvar', export: 'Exportar', import: 'Importar', reset: 'Restaurar padrão',
     saved: 'Salvo.', restored: 'Padrão restaurado.', imported: 'Importado.',
@@ -398,6 +432,8 @@ const I18N = {
     days: (n) => `${n} day${n === 1 ? '' : 's'}`,
     rainToday: 'today',
     optCur: 'Currency rates', curHint: 'Fiat (USD, EUR, BRL…) and crypto (BTC, ETH, USDT, SOL…). E.g. USDT/BRL, USDT/BTC.', noPairs: 'No rates.', badPair: 'Invalid currency code.', optStats: 'Visible stats',
+    optPic: 'Image', optPicPh: 'URL (https://… or file:///…)', optPicFile: 'Choose file…', optPicRatio: 'Image aspect ratio',
+    ratioOrig: 'original', picLocal: 'file: ', picTooBig: 'Image too large to store in the browser (max ~3 MB).',
     optSitesFmt: '[{"cat": "Name", "url": "optional", "tag": "optional", "links": [["Title", "https://…"]]}]',
     save: 'Save', export: 'Export', import: 'Import', reset: 'Restore defaults',
     saved: 'Saved.', restored: 'Defaults restored.', imported: 'Imported.',
@@ -451,6 +487,8 @@ const DEFAULTS = {
   weatherFields: ['now', 'hilo', 'feels', 'rain', 'uv'],
   statsVersion: 3,
   useFrames: false,
+  picUrl: '',   // URL, or 'local:<name>' for an uploaded file kept in sp.picdata
+  picRatio: '',
   sitesVersion: SITES_VERSION,
   sites: [
     { cat: 'Reddit', url: 'https://www.reddit.com', links: [
@@ -527,6 +565,7 @@ function applyConfig() {
   $('#logo').classList.toggle('notitle', !cfg.title);
   document.title = cfg.title || 'startpage';
   $('#frame-title').textContent = cfg.title;
+  renderPic();
   renderSites();
   renderFrame();
   renderStats();
@@ -534,6 +573,14 @@ function applyConfig() {
   document.body.classList.toggle('frames', cfg.useFrames);
   syncFilterMenu();
   renderTodos();
+}
+
+function renderPic() {
+  const src = cfg.picUrl.startsWith('local:') ? store.get('sp.picdata', '') : cfg.picUrl;
+  $('#pic-box').hidden = !src;
+  const img = $('#pic');
+  if (src) { if (img.getAttribute('src') !== src) img.src = src; } else img.removeAttribute('src');
+  img.style.aspectRatio = cfg.picRatio || '';
 }
 
 function siteLink(name, url) {
@@ -956,6 +1003,10 @@ function fillOptions() {
   $('#opt-name').value = cfg.name;
   $('#opt-theme').value = cfg.theme;
   $('#opt-newtab').checked = cfg.newTab;
+  picDraft = { url: cfg.picUrl, data: null };
+  showPicDraft();
+  $('#opt-pic-ratio').value = cfg.picRatio;
+  $('#stats-det').open = false;
   $('#opt-city').value = cfg.city;
   $('#opt-country').value = cfg.country;
   curDraft = cfg.currencies.map((p) => [...p]);
@@ -1030,6 +1081,26 @@ function addPair() {
 $('#cur-add-btn').addEventListener('click', addPair);
 onEnter(['#cur-from', '#cur-to'], addPair);
 
+// image option: a typed URL, or an uploaded file (stored as a data URL on save)
+let picDraft = { url: '', data: null };
+function showPicDraft() {
+  const local = picDraft.url.startsWith('local:');
+  $('#opt-pic').value = local ? '' : picDraft.url;
+  $('#opt-pic').placeholder = local ? L().picLocal + picDraft.url.slice(6) : L().optPicPh;
+}
+$('#opt-pic').addEventListener('input', (e) => { picDraft = { url: e.target.value.trim(), data: null }; });
+$('#opt-pic-file').addEventListener('click', () => $('#pic-file').click());
+$('#pic-file').addEventListener('change', (e) => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  if (f.size > 3e6) return msg(L().picTooBig);
+  const r = new FileReader();
+  r.onload = () => { picDraft = { url: 'local:' + f.name, data: r.result }; showPicDraft(); };
+  r.readAsDataURL(f);
+});
+$('#opt-pic-clear').addEventListener('click', () => { picDraft = { url: '', data: null }; showPicDraft(); });
+
 function msg(t) { $('#opt-msg').textContent = t; setTimeout(() => { $('#opt-msg').textContent = ''; }, 3000); }
 
 function validSites(s) {
@@ -1047,6 +1118,9 @@ $('#opt-save').addEventListener('click', () => {
   let sites;
   try { sites = JSON.parse($('#opt-sites').value); } catch (e) { return msg(L().badJson + e.message); }
   if (!validSites(sites)) return msg(L().badSites);
+  if (picDraft.data) {
+    try { localStorage.setItem('sp.picdata', JSON.stringify(picDraft.data)); } catch { return msg(L().picTooBig); }
+  } else if (!picDraft.url.startsWith('local:')) store.set('sp.picdata', '');
   commit({
     ...cfg,
     title: $('#opt-title').value.trim(),
@@ -1054,6 +1128,8 @@ $('#opt-save').addEventListener('click', () => {
     lang: $('#opt-lang').value,
     theme: $('#opt-theme').value,
     newTab: $('#opt-newtab').checked,
+    picUrl: picDraft.url,
+    picRatio: $('#opt-pic-ratio').value,
     city: $('#opt-city').value.trim(),
     currencies: curDraft.map((p) => [...p]),
     timezones: [...tzDraft],
@@ -1075,7 +1151,7 @@ $('#opt-reset').addEventListener('click', () => {
 });
 
 function exportAll() {
-  const data = { config: cfg, notes: notes.value, todos };
+  const data = { config: cfg, notes: notes.value, todos, picdata: store.get('sp.picdata', '') };
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
   a.download = 'startpage-backup.json';
@@ -1092,6 +1168,7 @@ $('#import-file').addEventListener('change', async (e) => {
       if (d.config.sites && !validSites(d.config.sites)) throw new Error(L().badSites);
       commit({ ...structuredClone(DEFAULTS), ...d.config });
     }
+    if (typeof d.picdata === 'string') { store.set('sp.picdata', d.picdata); renderPic(); }
     if (typeof d.notes === 'string') { notes.value = d.notes; store.set('sp.notes', d.notes); }
     if (Array.isArray(d.todos)) { todos = d.todos; saveTodos(); }
     if (pop.classList.contains('on')) fillOptions();
