@@ -8,17 +8,17 @@
 :root, [data-theme="yotsuba"] {
   --bg: #ffe; --bg-top: #fca; --text: #800; --muted: #800;
   --link: #800; --link-hover: #e00; --box-bg: #fff; --box-border: #800;
-  --hd-bg: #fca; --hd-text: #800; --tag: #f00; --input-bg: #fff;
+  --hd-bg: #fca; --hd-text: #800; --tag: #f00; --input-bg: #fff; --footer-link: #00e;
 }
 [data-theme="yotsuba-b"] {
   --bg: #eef2ff; --bg-top: #d1d5ee; --text: #000; --muted: #34345c;
   --link: #34345c; --link-hover: #d00; --box-bg: #fff; --box-border: #34345c;
-  --hd-bg: #d1d5ee; --hd-text: #0f0c5d; --tag: #d00; --input-bg: #fff;
+  --hd-bg: #d1d5ee; --hd-text: #0f0c5d; --tag: #d00; --input-bg: #fff; --footer-link: #00e;
 }
 [data-theme="dark"] {
   --bg: #1d1f21; --bg-top: #282a2e; --text: #c5c8c6; --muted: #c5c8c6;
   --link: #81a2be; --link-hover: #5f89ac; --box-bg: #1d1f21; --box-border: #444;
-  --hd-bg: #282a2e; --hd-text: #c5c8c6; --tag: #cc6666; --input-bg: #282a2e;
+  --hd-bg: #282a2e; --hd-text: #c5c8c6; --tag: #cc6666; --input-bg: #282a2e; --footer-link: #81a2be;
 }
 * { box-sizing: border-box; }
 body {
@@ -97,6 +97,13 @@ button:hover { color: var(--link-hover); }
 .opt { display: grid; grid-template-columns: 170px 1fr; gap: 6px 10px; align-items: center; }
 .opt label.k { font-weight: bold; }
 .opt .full { grid-column: 1 / -1; }
+.opt .sub { padding-left: 10px; margin-top: -2px; }
+#opt-stats { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 3px 18px; }
+#cur-list { list-style: none; margin: 0 0 4px; padding: 0; }
+#cur-list li { line-height: 18px; }
+#cur-list .x { color: var(--tag); cursor: pointer; margin-left: 6px; }
+#cur-add { display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
+#cur-add input { width: 70px; text-transform: uppercase; }
 #opt-sites { height: 260px; font-family: monospace; font-size: 11px; }
 .btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 #opt-msg { margin-left: 6px; }
@@ -105,7 +112,8 @@ kbd { border: 1px solid var(--box-border); padding: 0 4px; font-size: 11px; back
 .keys td { padding: 2px 10px 2px 0; }
 
 footer { text-align: center; margin-top: 24px; font-size: 11px; }
-footer a { text-decoration: underline; cursor: pointer; }
+footer a { color: var(--footer-link); text-decoration: underline; cursor: pointer; }
+footer a:hover { color: var(--link-hover); }
 footer p { margin: 6px 0; }
 
 /* filter dropdown */
@@ -143,6 +151,7 @@ body.frames { padding-left: 200px; }
 @media (max-width: 600px) {
   #logo h1 { font-size: 40px; }
   .opt { grid-template-columns: 1fr; }
+  #opt-stats { grid-template-columns: repeat(2, auto); }
   #tabs a { padding: 3px 8px; }
   body.frames { padding-left: 0; }
   body.frames #frame { position: static; width: auto; border-right: 0; border-bottom: 1px solid var(--box-border); max-height: 40vh; }
@@ -219,7 +228,7 @@ body.frames { padding-left: 200px; }
   </div>
 
   <footer>
-    <p><a id="f-export" data-i18n="export"></a> • <a id="f-import" data-i18n="import"></a> • <a id="f-top" data-i18n="top"></a> • <a href="https://github.com/olbaplegal/startpage" target="_blank" rel="noopener">About</a></p>
+    <p><a id="f-export" data-i18n="export"></a> • <a id="f-import" data-i18n="import"></a> • <a id="f-top" data-i18n="top"></a> • <a href="https://github.com/olbaplegal/startpage" target="_blank" rel="noopener">About</a> • <a href="https://github.com/olbaplegal/startpage/issues" target="_blank" rel="noopener">Feedback</a></p>
   </footer>
 </div>
 
@@ -248,14 +257,20 @@ body.frames { padding-left: 200px; }
       <span><input id="opt-newtab" type="checkbox"></span>
       <label class="k" for="opt-city" data-i18n="optCity"></label>
       <input id="opt-city" type="text" data-i18n-ph="optCityPh">
-      <label class="k" for="opt-cur" data-i18n="optCur"></label>
-      <select id="opt-cur">
-        <option value="USD-BRL">USD → BRL</option>
-        <option value="EUR-BRL">EUR → BRL</option>
-        <option value="BTC-BRL">BTC → BRL</option>
-      </select>
-      <span class="k"><b data-i18n="optStats"></b></span>
-      <span id="opt-stats"></span>
+      <label class="k full" for="cur-from" data-i18n="optCur"></label>
+      <div class="full sub">
+        <ul id="cur-list"></ul>
+        <div id="cur-add">
+          <input id="cur-from" type="text" list="cur-codes" maxlength="5" placeholder="USDT">
+          <span>→</span>
+          <input id="cur-to" type="text" list="cur-codes" maxlength="5" placeholder="BRL">
+          <button id="cur-add-btn" type="button" data-i18n="add"></button>
+        </div>
+        <div class="muted" data-i18n="curHint"></div>
+        <datalist id="cur-codes"></datalist>
+      </div>
+      <span class="k full"><b data-i18n="optStats"></b></span>
+      <div id="opt-stats" class="full sub"></div>
       <label class="k full" for="opt-sites">Sites (JSON) <span class="muted">— <code data-i18n="optSitesFmt"></code></span></label>
       <textarea id="opt-sites" class="full" spellcheck="false"></textarea>
     </div>
@@ -284,7 +299,7 @@ const I18N = {
     optTitle: 'Título', optName: 'Seu nome (saudação)', optNamePh: 'vazio = sem saudação', optLang: 'Idioma',
     optTheme: 'Tema', themeY: 'Yotsuba (bege)', themeB: 'Yotsuba B (azul)', themeDark: 'Escuro',
     optCols: 'Colunas', optNewTab: 'Links em nova aba', optCity: 'Cidade (clima)', optCityPh: 'ex: São Paulo',
-    optCur: 'Moeda (cotação)', optStats: 'Stats visíveis',
+    optCur: 'Cotações', curHint: 'Fiat (USD, EUR, BRL…) e cripto (BTC, ETH, USDT, SOL…). Ex.: USDT → BRL, USDT → BTC.', noPairs: 'Nenhuma cotação.', badPair: 'Código de moeda inválido.', optStats: 'Stats visíveis',
     optSitesFmt: '[{"cat": "Nome", "url": "opcional", "tag": "opcional", "links": [["Título", "https://…"]]}]',
     save: 'Salvar', export: 'Exportar', import: 'Importar', reset: 'Restaurar padrão', top: 'Topo',
     saved: 'Salvo.', restored: 'Padrão restaurado.', imported: 'Importado.',
@@ -293,7 +308,7 @@ const I18N = {
     unavailable: 'indisponível',
     greet: ['Boa madrugada', 'Bom dia', 'Boa tarde', 'Boa noite'],
     pending: (n) => `${n} pendente${n === 1 ? '' : 's'}`,
-    stats: { clock: 'Hora', date: 'Data', weather: 'Clima', currency: 'Cotação', todos: 'Tarefas', uptime: 'Aberto há' },
+    stats: { clock: 'Hora', date: 'Data', weather: 'Clima', currency: 'Cotações', todos: 'Tarefas', uptime: 'Aberto há' },
     wmo: { 0: 'limpo', 1: 'quase limpo', 2: 'parc. nublado', 3: 'nublado', 45: 'neblina', 48: 'neblina',
       51: 'garoa', 53: 'garoa', 55: 'garoa', 61: 'chuva fraca', 63: 'chuva', 65: 'chuva forte',
       80: 'pancadas', 81: 'pancadas', 82: 'temporal', 95: 'trovoadas', 96: 'trovoadas', 99: 'trovoadas' },
@@ -310,7 +325,7 @@ const I18N = {
     optTitle: 'Title', optName: 'Your name (greeting)', optNamePh: 'empty = no greeting', optLang: 'Language',
     optTheme: 'Theme', themeY: 'Yotsuba (beige)', themeB: 'Yotsuba B (blue)', themeDark: 'Dark',
     optCols: 'Columns', optNewTab: 'Open links in new tab', optCity: 'City (weather)', optCityPh: 'e.g. London',
-    optCur: 'Currency (rate)', optStats: 'Visible stats',
+    optCur: 'Currency rates', curHint: 'Fiat (USD, EUR, BRL…) and crypto (BTC, ETH, USDT, SOL…). E.g. USDT → BRL, USDT → BTC.', noPairs: 'No rates.', badPair: 'Invalid currency code.', optStats: 'Visible stats',
     optSitesFmt: '[{"cat": "Name", "url": "optional", "tag": "optional", "links": [["Title", "https://…"]]}]',
     save: 'Save', export: 'Export', import: 'Import', reset: 'Restore defaults', top: 'Top',
     saved: 'Saved.', restored: 'Defaults restored.', imported: 'Imported.',
@@ -319,7 +334,7 @@ const I18N = {
     unavailable: 'unavailable',
     greet: ['Good night', 'Good morning', 'Good afternoon', 'Good evening'],
     pending: (n) => `${n} pending`,
-    stats: { clock: 'Time', date: 'Date', weather: 'Weather', currency: 'Rate', todos: 'Tasks', uptime: 'Open for' },
+    stats: { clock: 'Time', date: 'Date', weather: 'Weather', currency: 'Rates', todos: 'Tasks', uptime: 'Open for' },
     wmo: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'fog',
       51: 'drizzle', 53: 'drizzle', 55: 'drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain',
       80: 'showers', 81: 'showers', 82: 'storm', 95: 'thunderstorm', 96: 'thunderstorm', 99: 'thunderstorm' },
@@ -347,7 +362,7 @@ const DEFAULTS = {
   cols: 5,
   newTab: false,
   city: 'São Paulo',
-  currency: 'USD-BRL',
+  currencies: [['USD', 'BRL'], ['USDT', 'BRL'], ['USDT', 'BTC']],
   stats: ['clock', 'date', 'weather', 'currency', 'todos'],
   useFrames: false,
   useCatalog: false,
@@ -392,6 +407,10 @@ const store = {
 
 let cfg = { ...structuredClone(DEFAULTS), ...store.get('sp.config', {}) };
 cfg.stats = cfg.stats.filter((k) => STAT_KEYS.includes(k));
+if (typeof cfg.currency === 'string') { // single pair from older versions
+  cfg.currencies = [cfg.currency.split('-')];
+  delete cfg.currency;
+}
 if (cfg.sitesVersion !== SITES_VERSION) {
   cfg.sites = structuredClone(DEFAULTS.sites);
   cfg.sitesVersion = SITES_VERSION;
@@ -462,17 +481,27 @@ function greet() {
 }
 
 /* ---------- stats ---------- */
-const statCache = { weather: '…', currency: '…' };
+const statCache = { weather: '…', cur: {} };
 
 function renderStats() {
   const row = $('#statrow');
   row.innerHTML = '';
-  statCache.weather = statCache.currency = '…';
-  $('#stats-box').style.display = cfg.stats.length ? '' : 'none';
+  statCache.weather = '…';
+  statCache.cur = {};
+  const items = [];
   for (const k of cfg.stats) {
+    if (k === 'currency') cfg.currencies.forEach(([f, t], i) => items.push([`${f}→${t}`, `cur-${i}`]));
+    else items.push([L().stats[k], k]);
+  }
+  $('#stats-box').style.display = items.length ? '' : 'none';
+  for (const [label, id] of items) {
     const s = document.createElement('span');
     s.className = 'stat';
-    s.innerHTML = `<b>${L().stats[k]}:</b> <span id="st-${k}"></span>`;
+    const b = document.createElement('b');
+    b.textContent = label + ':';
+    const v = document.createElement('span');
+    v.id = 'st-' + id;
+    s.append(b, ' ', v);
     row.append(s);
   }
   tick();
@@ -491,7 +520,7 @@ function tick() {
   const m = Math.floor((Date.now() - openedAt) / 60000);
   setStat('uptime', m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`);
   setStat('weather', statCache.weather);
-  setStat('currency', statCache.currency);
+  cfg.currencies.forEach((_, i) => setStat('cur-' + i, statCache.cur[i] ?? '…'));
 }
 
 async function cached(key, ttlMs, fn) {
@@ -521,19 +550,52 @@ async function loadWeather() {
   tick();
 }
 
-async function loadCurrency() {
-  try {
-    const v = await cached('sp.cur.' + cfg.currency, 30 * 60e3, async () => {
-      const r = await fetch(`https://economia.awesomeapi.com.br/json/last/${cfg.currency}`);
-      const j = await r.json();
-      return j[cfg.currency.replace('-', '')];
-    });
-    const [from] = cfg.currency.split('-');
-    const pct = parseFloat(v.pctChange);
-    const val = parseFloat(v.bid).toLocaleString(L().locale, { style: 'currency', currency: 'BRL' });
-    statCache.currency = `${from} ${val} (${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%)`;
-  } catch (e) { statCache.currency = L().unavailable; }
-  tick();
+// crypto prices come from CoinGecko, fiat-to-fiat from AwesomeAPI
+const CRYPTO = {
+  BTC: 'bitcoin', ETH: 'ethereum', USDT: 'tether', USDC: 'usd-coin', SOL: 'solana', BNB: 'binancecoin',
+  XRP: 'ripple', DOGE: 'dogecoin', LTC: 'litecoin', ADA: 'cardano', TRX: 'tron', DOT: 'polkadot',
+};
+const FIAT = ['BRL', 'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'ARS', 'MXN'];
+
+async function coingecko(coin, vs) {
+  const id = CRYPTO[coin], q = vs.toLowerCase();
+  const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=${q}&include_24hr_change=true`);
+  const j = (await r.json())[id] || {};
+  if (j[q] == null) throw new Error('unsupported pair');
+  return { v: j[q], pct: j[q + '_24h_change'] ?? 0 };
+}
+
+async function fetchRate(from, to) {
+  if (CRYPTO[from]) {
+    try { return await coingecko(from, to); } catch (e) { if (!CRYPTO[to]) throw e; }
+  }
+  if (CRYPTO[to]) {
+    const r = await coingecko(to, from);
+    return { v: 1 / r.v, pct: (100 / (1 + r.pct / 100)) - 100 };
+  }
+  const r = await fetch(`https://economia.awesomeapi.com.br/json/last/${from}-${to}`);
+  const j = (await r.json())[from + to];
+  if (!j) throw new Error('unsupported pair');
+  return { v: parseFloat(j.bid), pct: parseFloat(j.pctChange) };
+}
+
+function fmtRate(v, to) {
+  const loc = L().locale;
+  const digits = v >= 1 ? { minimumFractionDigits: 2, maximumFractionDigits: 2 } : { maximumSignificantDigits: 4 };
+  if (!CRYPTO[to]) {
+    try { return v.toLocaleString(loc, { style: 'currency', currency: to, ...digits }); } catch {}
+  }
+  return `${v.toLocaleString(loc, digits)} ${to}`;
+}
+
+function loadCurrency() {
+  cfg.currencies.forEach(async ([from, to], i) => {
+    try {
+      const r = await cached(`sp.rate.${from}-${to}`, 30 * 60e3, () => fetchRate(from, to));
+      statCache.cur[i] = `${fmtRate(r.v, to)} (${r.pct.toLocaleString(L().locale, { signDisplay: 'always', minimumFractionDigits: 2, maximumFractionDigits: 2 })}%)`;
+    } catch (e) { statCache.cur[i] = L().unavailable; }
+    tick();
+  });
 }
 
 setInterval(tick, 1000);
@@ -686,17 +748,47 @@ function fillOptions() {
   $('#opt-cols').value = cfg.cols;
   $('#opt-newtab').checked = cfg.newTab;
   $('#opt-city').value = cfg.city;
-  $('#opt-cur').value = cfg.currency;
+  curDraft = cfg.currencies.map((p) => [...p]);
+  renderCurList();
   $('#opt-sites').value = JSON.stringify(cfg.sites, null, 2);
   const box = $('#opt-stats');
   box.innerHTML = '';
   for (const [k, label] of Object.entries(L().stats)) {
     const l = document.createElement('label');
-    l.style.marginRight = '10px';
     l.innerHTML = `<input type="checkbox" value="${k}" ${cfg.stats.includes(k) ? 'checked' : ''}> ${label}`;
     box.append(l);
   }
   $('#opt-msg').textContent = '';
+}
+
+let curDraft = [];
+$('#cur-codes').innerHTML = [...Object.keys(CRYPTO), ...FIAT].map((c) => `<option value="${c}">`).join('');
+
+function renderCurList() {
+  const ul = $('#cur-list');
+  ul.innerHTML = '';
+  curDraft.forEach(([f, t], i) => {
+    const li = document.createElement('li');
+    const x = document.createElement('a');
+    x.className = 'x'; x.textContent = '[x]'; x.title = L().remove;
+    x.onclick = () => { curDraft.splice(i, 1); renderCurList(); };
+    li.append(`${f} → ${t}`, x);
+    ul.append(li);
+  });
+  if (!curDraft.length) ul.innerHTML = `<li class="muted">${L().noPairs}</li>`;
+}
+
+function addPair() {
+  const f = $('#cur-from').value.trim().toUpperCase(), t = $('#cur-to').value.trim().toUpperCase();
+  if (!/^[A-Z]{2,5}$/.test(f) || !/^[A-Z]{2,5}$/.test(t) || f === t) return msg(L().badPair);
+  if (!curDraft.some(([a, b]) => a === f && b === t)) curDraft.push([f, t]);
+  $('#cur-from').value = $('#cur-to').value = '';
+  renderCurList();
+  $('#cur-from').focus();
+}
+$('#cur-add-btn').addEventListener('click', addPair);
+for (const id of ['#cur-from', '#cur-to']) {
+  $(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addPair(); } });
 }
 
 function msg(t) { $('#opt-msg').textContent = t; setTimeout(() => { $('#opt-msg').textContent = ''; }, 3000); }
@@ -725,7 +817,7 @@ $('#opt-save').addEventListener('click', () => {
     cols: +$('#opt-cols').value || DEFAULTS.cols,
     newTab: $('#opt-newtab').checked,
     city: $('#opt-city').value.trim(),
-    currency: $('#opt-cur').value,
+    currencies: curDraft.map((p) => [...p]),
     stats: [...document.querySelectorAll('#opt-stats input:checked')].map((i) => i.value),
     sites,
   });
