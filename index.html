@@ -135,7 +135,11 @@ details.drop > summary::after {
   border: 4px solid transparent; border-left: 6px solid currentColor; border-right: 0; transition: transform .15s ease;
 }
 details.drop[open] > summary::after { transform: rotate(90deg); }
-#stats-det[open] > summary { margin-bottom: 4px; }
+#stats-det[open] > summary, #pic-det[open] > summary { margin-bottom: 4px; }
+.pic-opts { display: grid; gap: 4px; }
+.pic-opts .row { display: flex; align-items: center; gap: 6px; }
+/* line between the Sites (JSON) label and its textarea */
+.opt .sep { border-bottom: 1px solid var(--box-border); padding-bottom: 3px; margin-top: 4px; }
 .picrow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .picrow #opt-pic { flex: 1; min-width: 160px; }
 #wx-fields { display: grid; grid-template-columns: repeat(2, auto); justify-content: start; gap: 1px 16px; margin-top: 2px; }
@@ -297,20 +301,24 @@ body.frames { padding-left: 200px; }
       </select>
       <label class="k" for="opt-newtab" data-i18n="optNewTab"></label>
       <span><input id="opt-newtab" type="checkbox"></span>
-      <label class="k" for="opt-pic" data-i18n="optPic"></label>
-      <div class="picrow">
-        <input id="opt-pic" type="text" data-i18n-ph="optPicPh">
-        <button id="opt-pic-file" type="button" data-i18n="optPicFile"></button>
-        <button id="opt-pic-clear" type="button" data-i18n="remove"></button>
-        <input id="pic-file" type="file" accept="image/*" hidden>
+      <details class="full drop" id="pic-det"><summary><b data-i18n="optPic"></b></summary>
+      <div class="sub pic-opts">
+        <div class="picrow">
+          <input id="opt-pic" type="text" data-i18n-ph="optPicPh">
+          <button id="opt-pic-file" type="button" data-i18n="optPicFile"></button>
+          <button id="opt-pic-clear" type="button" data-i18n="remove"></button>
+          <input id="pic-file" type="file" accept="image/*" hidden>
+        </div>
+        <label class="row"><span data-i18n="optPicRatio"></span>
+          <select id="opt-pic-ratio">
+            <option value="" data-i18n="ratioOrig"></option>
+            <option value="16 / 9">16:9</option>
+            <option value="4 / 3">4:3</option>
+            <option value="1 / 1">1:1</option>
+          </select>
+        </label>
       </div>
-      <label class="k" for="opt-pic-ratio" data-i18n="optPicRatio"></label>
-      <select id="opt-pic-ratio">
-        <option value="" data-i18n="ratioOrig"></option>
-        <option value="16 / 9">16:9</option>
-        <option value="4 / 3">4:3</option>
-        <option value="1 / 1">1:1</option>
-      </select>
+      </details>
       <details class="full drop" id="stats-det"><summary><b data-i18n="optStats"></b></summary>
       <div id="opt-stats" class="sub">
         <label><input type="checkbox" value="clock"> <span data-i18n-stat="clock"></span></label>
@@ -369,7 +377,7 @@ body.frames { padding-left: 200px; }
         <label><input type="checkbox" value="uptime"> <span data-i18n-stat="uptime"></span></label>
       </div>
       </details>
-      <label class="k full" for="opt-sites">Sites (JSON) <span class="muted">— <code data-i18n="optSitesFmt"></code></span></label>
+      <label class="k full sep" for="opt-sites">Sites (JSON) <span class="muted">— <code data-i18n="optSitesFmt"></code></span></label>
       <textarea id="opt-sites" class="full" spellcheck="false"></textarea>
     </div>
     <div class="btns">
@@ -1030,6 +1038,7 @@ function fillOptions() {
   showPicDraft();
   $('#opt-pic-ratio').value = cfg.picRatio;
   $('#stats-det').open = false;
+  $('#pic-det').open = false;
   $('#opt-city').value = cfg.city;
   $('#opt-country').value = cfg.country;
   curDraft = cfg.currencies.map((p) => [...p]);
