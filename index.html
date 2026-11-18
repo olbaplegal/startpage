@@ -111,6 +111,7 @@ button:hover { color: var(--link-hover); }
 .sset summary { cursor: pointer; color: var(--link); font-size: 11px; user-select: none; }
 .sset summary:hover { color: var(--link-hover); }
 .sset[open] summary { margin-bottom: 4px; }
+#wx-fields { display: grid; grid-template-columns: repeat(2, auto); justify-content: start; gap: 1px 16px; margin-top: 2px; }
 .sset .row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
 /* list editors (rates, time zones, countdowns) */
 .elist { list-style: none; margin: 0 0 4px; padding: 0; }
@@ -296,10 +297,19 @@ body.frames { padding-left: 200px; }
           <div class="muted" data-i18n="optCountryHint"></div>
         </details>
         <label><input type="checkbox" value="weather"> <span data-i18n-stat="weather"></span></label>
-        <label><input type="checkbox" value="weatherDetail"> <span data-i18n-stat="weatherDetail"></span></label>
-        <label><input type="checkbox" value="rain"> <span data-i18n-stat="rain"></span></label>
-        <details class="sset" data-for="weather weatherDetail rain"><summary data-i18n="settings"></summary>
+        <details class="sset" data-for="weather"><summary data-i18n="settings"></summary>
           <label class="row"><span data-i18n="optCity"></span> <input id="opt-city" type="text" data-i18n-ph="optCityPh"></label>
+          <div class="muted" data-i18n="wxShow"></div>
+          <div id="wx-fields">
+            <label><input type="checkbox" value="now"> <span data-i18n-wx="now"></span></label>
+            <label><input type="checkbox" value="hilo"> <span data-i18n-wx="hilo"></span></label>
+            <label><input type="checkbox" value="feels"> <span data-i18n-wx="feels"></span></label>
+            <label><input type="checkbox" value="rain"> <span data-i18n-wx="rain"></span></label>
+            <label><input type="checkbox" value="uv"> <span data-i18n-wx="uv"></span></label>
+            <label><input type="checkbox" value="humidity"> <span data-i18n-wx="humidity"></span></label>
+            <label><input type="checkbox" value="wind"> <span data-i18n-wx="wind"></span></label>
+            <label><input type="checkbox" value="sun"> <span data-i18n-wx="sun"></span></label>
+          </div>
         </details>
         <label><input type="checkbox" value="currency"> <span data-i18n-stat="currency"></span></label>
         <details class="sset" data-for="currency"><summary data-i18n="settings"></summary>
@@ -358,10 +368,14 @@ const I18N = {
     unavailable: 'indisponível',
     greet: ['Boa madrugada', 'Bom dia', 'Boa tarde', 'Boa noite'],
     pending: (n) => `${n} pendente${n === 1 ? '' : 's'}`,
-    statLabels: { holiday: 'Próx. feriado', weather: 'Agora', hilo: 'Máx/Mín', feels: 'Sensação', uv: 'UV', rain: 'Chuva' },
+    statLabels: { holiday: 'Próx. feriado' },
+    wx: { now: 'Agora', hilo: 'Máx/Mín', feels: 'Sensação', rain: 'Chuva', uv: 'UV', humidity: 'Umidade', wind: 'Vento', sun: 'Sol' },
+    wxOpt: { now: 'Agora (temperatura e céu)', hilo: 'Máxima/mínima', feels: 'Sensação térmica', rain: 'Chance de chuva',
+      uv: 'Índice UV', humidity: 'Umidade', wind: 'Vento', sun: 'Nascer/pôr do sol' },
+    wxShow: 'mostrar:',
     groups: { time: 'Horário', dates: 'Datas', weather: 'Clima', currency: 'Cotações', misc: 'Outros' },
     stats: { clock: 'Hora', tz: 'Fusos extras', date: 'Data', countdown: 'Contagem regressiva', holiday: 'Próx. feriado',
-      weather: 'Clima', weatherDetail: 'Clima detalhado', rain: 'Chance de chuva', currency: 'Cotações', todos: 'Tarefas', uptime: 'Aberto há' },
+      weather: 'Clima', currency: 'Cotações', todos: 'Tarefas', uptime: 'Aberto há' },
     wmo: { 0: 'limpo', 1: 'quase limpo', 2: 'parc. nublado', 3: 'nublado', 45: 'neblina', 48: 'neblina',
       51: 'garoa', 53: 'garoa', 55: 'garoa', 61: 'chuva fraca', 63: 'chuva', 65: 'chuva forte',
       80: 'pancadas', 81: 'pancadas', 82: 'temporal', 95: 'trovoadas', 96: 'trovoadas', 99: 'trovoadas' },
@@ -392,16 +406,21 @@ const I18N = {
     unavailable: 'unavailable',
     greet: ['Good night', 'Good morning', 'Good afternoon', 'Good evening'],
     pending: (n) => `${n} pending`,
-    statLabels: { holiday: 'Next holiday', weather: 'Now', hilo: 'High/Low', feels: 'Feels like', uv: 'UV', rain: 'Rain' },
+    statLabels: { holiday: 'Next holiday' },
+    wx: { now: 'Now', hilo: 'High/Low', feels: 'Feels like', rain: 'Rain', uv: 'UV', humidity: 'Humidity', wind: 'Wind', sun: 'Sun' },
+    wxOpt: { now: 'Now (temperature and sky)', hilo: 'High/low', feels: 'Feels like', rain: 'Chance of rain',
+      uv: 'UV index', humidity: 'Humidity', wind: 'Wind', sun: 'Sunrise/sunset' },
+    wxShow: 'show:',
     groups: { time: 'Time', dates: 'Dates', weather: 'Weather', currency: 'Rates', misc: 'Other' },
     stats: { clock: 'Time', tz: 'Extra time zones', date: 'Date', countdown: 'Countdowns', holiday: 'Next holiday',
-      weather: 'Weather', weatherDetail: 'Weather details', rain: 'Chance of rain', currency: 'Rates', todos: 'Tasks', uptime: 'Open for' },
+      weather: 'Weather', currency: 'Rates', todos: 'Tasks', uptime: 'Open for' },
     wmo: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'fog',
       51: 'drizzle', 53: 'drizzle', 55: 'drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain',
       80: 'showers', 81: 'showers', 82: 'storm', 95: 'thunderstorm', 96: 'thunderstorm', 99: 'thunderstorm' },
   },
 };
 const STAT_KEYS = Object.keys(I18N.pt.stats);
+const WX_FIELDS = Object.keys(I18N.pt.wx);
 const L = () => I18N[cfg.lang] || I18N.pt;
 
 function applyLang() {
@@ -409,6 +428,7 @@ function applyLang() {
   document.documentElement.lang = t.locale;
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t[el.dataset.i18n]; });
   document.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t[el.dataset.i18nPh]; });
+  document.querySelectorAll('[data-i18n-wx]').forEach((el) => { el.textContent = t.wxOpt[el.dataset.i18nWx]; });
   document.querySelectorAll('[data-i18n-stat]').forEach((el) => { el.textContent = t.stats[el.dataset.i18nStat]; });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t[el.dataset.i18nTitle]; });
 }
@@ -427,8 +447,9 @@ const DEFAULTS = {
   timezones: ['UTC', 'Asia/Tokyo'],
   countdowns: [['Ano novo', `${new Date().getFullYear() + 1}-01-01`]],
   currencies: [['USD', 'BRL'], ['USDT', 'BRL'], ['USDT', 'BTC']],
-  stats: ['clock', 'tz', 'date', 'countdown', 'holiday', 'weather', 'weatherDetail', 'rain', 'currency', 'todos'],
-  statsVersion: 2,
+  stats: ['clock', 'tz', 'date', 'countdown', 'holiday', 'weather', 'currency', 'todos'],
+  weatherFields: ['now', 'hilo', 'feels', 'rain', 'uv'],
+  statsVersion: 3,
   useFrames: false,
   useCatalog: false,
   sitesVersion: SITES_VERSION,
@@ -472,15 +493,23 @@ const store = {
 
 const saved = store.get('sp.config', {});
 let cfg = { ...structuredClone(DEFAULTS), ...saved };
-cfg.stats = cfg.stats.filter((k) => STAT_KEYS.includes(k));
 if (typeof cfg.currency === 'string') { // single pair from older versions
   cfg.currencies = [cfg.currency.split('-')];
   delete cfg.currency;
 }
 if ((saved.statsVersion || 1) < 2) { // stats added in v2 start enabled
   for (const k of ['tz', 'countdown', 'holiday', 'weatherDetail', 'rain']) if (!cfg.stats.includes(k)) cfg.stats.push(k);
+}
+if ((saved.statsVersion || 1) < 3) { // v3: weather details and rain became fields of the weather stat
+  const had = (k) => cfg.stats.includes(k);
+  const fields = [...(had('weather') ? ['now'] : []), ...(had('weatherDetail') ? ['hilo', 'feels', 'uv'] : []), ...(had('rain') ? ['rain'] : [])];
+  if (fields.length) {
+    cfg.weatherFields = WX_FIELDS.filter((f) => fields.includes(f));
+    if (!had('weather')) cfg.stats.push('weather');
+  }
+  cfg.stats = cfg.stats.filter((k) => STAT_KEYS.includes(k));
   cfg.stats.sort((a, b) => STAT_KEYS.indexOf(a) - STAT_KEYS.indexOf(b));
-  cfg.statsVersion = 2;
+  cfg.statsVersion = 3;
   store.set('sp.config', cfg);
 }
 if (saved.sitesVersion !== SITES_VERSION) {
@@ -571,13 +600,13 @@ function greet() {
 }
 
 /* ---------- stats ---------- */
-const statCache = { weather: '…', weatherDetail: '…', rain: '…', holiday: null, cur: {} };
+const statCache = { wx: {}, holiday: null, cur: {} };
 
 // stats are shown in columns, one per group, in this order
 const STAT_GROUPS = {
   time: ['clock', 'tz', 'date'],
   dates: ['countdown', 'holiday'],
-  weather: ['weather', 'weatherDetail', 'rain'],
+  weather: ['weather'],
   currency: ['currency'],
   misc: ['todos', 'uptime'],
 };
@@ -587,14 +616,14 @@ function statRows(k) {
   if (k === 'currency') return cfg.currencies.map(([f, to], i) => [`${f}/${to}`, `cur-${i}`]);
   if (k === 'tz') return cfg.timezones.map((z, i) => [tzName(z), `tz-${i}`]);
   if (k === 'countdown') return cfg.countdowns.map(([name], i) => [name, `cd-${i}`]);
-  if (k === 'weatherDetail') return ['hilo', 'feels', 'uv'].map((x) => [t.statLabels[x], x]);
+  if (k === 'weather') return WX_FIELDS.filter((f) => cfg.weatherFields.includes(f)).map((f) => [t.wx[f], `wx-${f}`]);
   return [[t.statLabels[k] || t.stats[k], k]];
 }
 
 function renderStats() {
   const row = $('#statrow');
   row.innerHTML = '';
-  statCache.weather = statCache.hilo = statCache.feels = statCache.uv = statCache.rain = '…';
+  statCache.wx = {};
   statCache.holiday = null;
   statCache.cur = {};
   statCache.city = '';
@@ -623,7 +652,7 @@ function renderStats() {
   }
   $('#stats-box').style.display = any ? '' : 'none';
   tick();
-  if (['weather', 'weatherDetail', 'rain'].some((k) => cfg.stats.includes(k))) loadWeather();
+  if (cfg.stats.includes('weather') && cfg.weatherFields.length) loadWeather();
   if (cfg.stats.includes('holiday')) loadHoliday();
   if (cfg.stats.includes('currency')) loadCurrency();
 }
@@ -656,10 +685,8 @@ function tick() {
   const h = statCache.holiday;
   setStat('holiday', !h ? '…' : h.err ? t.unavailable
     : `${cfg.lang === 'en' ? h.name : h.localName}, ${new Date(h.date + 'T12:00').toLocaleDateString(t.locale, { day: '2-digit', month: '2-digit' })} (${countdownText(daysUntil(h.date))})`);
-  setStat('weather', statCache.weather);
-  for (const k of ['hilo', 'feels', 'uv']) setStat(k, statCache[k]);
+  for (const f of WX_FIELDS) setStat('wx-' + f, statCache.wx[f] ?? '…');
   setStat('city', statCache.city ? `(${statCache.city})` : '');
-  setStat('rain', statCache.rain);
   cfg.currencies.forEach((_, i) => setStat('cur-' + i, statCache.cur[i] ?? '…'));
 }
 
@@ -672,7 +699,8 @@ async function cached(key, ttlMs, fn) {
 }
 
 async function loadWeather() {
-  if (!cfg.city) { statCache.weather = statCache.hilo = statCache.feels = statCache.uv = statCache.rain = '—'; return tick(); }
+  const fill = (v) => { for (const f of WX_FIELDS) statCache.wx[f] = v; };
+  if (!cfg.city) { fill('—'); return tick(); }
   try {
     const loc = await cached('sp.geo.' + cfg.lang + '.' + cfg.city, 30 * 864e5, async () => {
       const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?count=1&language=${cfg.lang}&name=${encodeURIComponent(cfg.city)}`);
@@ -681,21 +709,28 @@ async function loadWeather() {
       const { latitude, longitude, name } = j.results[0];
       return { latitude, longitude, name };
     });
-    const j = await cached('sp.wx2.' + cfg.city, 15 * 60e3, async () => {
+    const j = await cached('sp.wx3.' + cfg.city, 15 * 60e3, async () => {
       const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}`
-        + '&current=temperature_2m,apparent_temperature,weather_code'
-        + '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max&forecast_days=1&timezone=auto');
+        + '&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,wind_speed_10m'
+        + '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset'
+        + '&forecast_days=1&timezone=auto');
       const { current, daily } = await r.json();
       return { current, daily };
     });
     const t = L(), c = j.current, d = j.daily, r0 = (x) => Math.round(x);
     statCache.city = loc.name;
-    statCache.weather = `${r0(c.temperature_2m)}°C, ${t.wmo[c.weather_code] ?? ''}`;
-    statCache.hilo = `${r0(d.temperature_2m_max[0])}°/${r0(d.temperature_2m_min[0])}°`;
-    statCache.feels = `${r0(c.apparent_temperature)}°`;
-    statCache.uv = String(r0(d.uv_index_max[0]));
-    statCache.rain = `${d.precipitation_probability_max[0] ?? 0}% ${t.rainToday}`;
-  } catch (e) { statCache.weather = statCache.hilo = statCache.feels = statCache.uv = statCache.rain = L().unavailable; }
+    const hm = (iso) => iso.slice(11, 16);
+    statCache.wx = {
+      now: `${r0(c.temperature_2m)}°C, ${t.wmo[c.weather_code] ?? ''}`,
+      hilo: `${r0(d.temperature_2m_max[0])}°/${r0(d.temperature_2m_min[0])}°`,
+      feels: `${r0(c.apparent_temperature)}°`,
+      rain: `${d.precipitation_probability_max[0] ?? 0}% ${t.rainToday}`,
+      uv: String(r0(d.uv_index_max[0])),
+      humidity: `${c.relative_humidity_2m}%`,
+      wind: `${r0(c.wind_speed_10m)} km/h`,
+      sun: `${hm(d.sunrise[0])} / ${hm(d.sunset[0])}`,
+    };
+  } catch (e) { fill(L().unavailable); }
   tick();
 }
 
@@ -930,6 +965,7 @@ function fillOptions() {
   renderEditors();
   $('#opt-sites').value = JSON.stringify(cfg.sites, null, 2);
   statChecks().forEach((cb) => { cb.checked = cfg.stats.includes(cb.value); });
+  document.querySelectorAll('#wx-fields input').forEach((cb) => { cb.checked = cfg.weatherFields.includes(cb.value); });
   document.querySelectorAll('.sset').forEach((d) => { d.open = false; });
   syncStatSettings();
   $('#opt-msg').textContent = '';
@@ -1025,6 +1061,7 @@ $('#opt-save').addEventListener('click', () => {
     countdowns: cdDraft.map((p) => [...p]),
     country: ($('#opt-country').value.trim() || DEFAULTS.country).toUpperCase(),
     stats: [...statChecks()].filter((c) => c.checked).map((c) => c.value),
+    weatherFields: [...document.querySelectorAll('#wx-fields input:checked')].map((c) => c.value),
     sites,
   });
   fillOptions();
