@@ -35,6 +35,9 @@ a:hover { color: var(--link-hover); }
   margin: 0; font: bold 52px/1 tahoma, arial, sans-serif; letter-spacing: -3px; color: var(--text);
 }
 #greet { margin-top: 6px; font-size: 13px; color: var(--muted); }
+#title:empty, #greet:empty, #frame-title:empty { display: none; }
+/* with no title, the greeting takes the title's place */
+#logo.notitle #greet { margin-top: 0; font: bold 34px/1.1 tahoma, arial, sans-serif; letter-spacing: -1px; color: var(--text); }
 
 .box { border: 1px solid var(--box-border); background: var(--box-bg); margin-bottom: 6px; }
 .hd { background: var(--hd-bg); display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; gap: 8px; }
@@ -521,7 +524,8 @@ function applyConfig() {
   document.documentElement.dataset.theme = cfg.theme;
   applyLang();
   $('#title').textContent = cfg.title;
-  document.title = cfg.title;
+  $('#logo').classList.toggle('notitle', !cfg.title);
+  document.title = cfg.title || 'startpage';
   $('#frame-title').textContent = cfg.title;
   renderSites();
   renderFrame();
@@ -1045,7 +1049,7 @@ $('#opt-save').addEventListener('click', () => {
   if (!validSites(sites)) return msg(L().badSites);
   commit({
     ...cfg,
-    title: $('#opt-title').value.trim() || DEFAULTS.title,
+    title: $('#opt-title').value.trim(),
     name: $('#opt-name').value.trim(),
     lang: $('#opt-lang').value,
     theme: $('#opt-theme').value,
