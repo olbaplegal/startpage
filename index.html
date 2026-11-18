@@ -48,8 +48,11 @@ a:hover { color: var(--link-hover); }
 .cat ul { list-style: none; margin: 0; padding: 0; }
 .cat li { line-height: 16px; }
 
-#statrow { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 3px 12px; padding: 6px 8px; }
-#statrow .stat { line-height: 16px; }
+#statrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 6px 10px; padding: 6px; }
+#statrow h3 { margin: 0 0 2px; font-size: 12px; font-weight: bold; text-decoration: underline; }
+#statrow h3 .city { font-weight: normal; text-decoration: none; }
+#statrow ul { list-style: none; margin: 0; padding: 0; }
+#statrow li { line-height: 16px; }
 #statrow b { color: var(--text); }
 
 #tabs { border-top: 1px solid var(--box-border); text-align: center; margin-top: 6px; font-size: 0; }
@@ -354,7 +357,8 @@ const I18N = {
     unavailable: 'indisponível',
     greet: ['Boa madrugada', 'Bom dia', 'Boa tarde', 'Boa noite'],
     pending: (n) => `${n} pendente${n === 1 ? '' : 's'}`,
-    statLabels: { holiday: 'Próx. feriado', hilo: 'Máx/Mín', feels: 'Sensação', uv: 'UV', rain: 'Chuva' },
+    statLabels: { holiday: 'Próx. feriado', weather: 'Agora', hilo: 'Máx/Mín', feels: 'Sensação', uv: 'UV', rain: 'Chuva' },
+    groups: { time: 'Horário', dates: 'Datas', weather: 'Clima', currency: 'Cotações', misc: 'Outros' },
     stats: { clock: 'Hora', tz: 'Fusos extras', date: 'Data', countdown: 'Contagem regressiva', holiday: 'Próx. feriado',
       weather: 'Clima', weatherDetail: 'Clima detalhado', rain: 'Chance de chuva', currency: 'Cotações', todos: 'Tarefas', uptime: 'Aberto há' },
     wmo: { 0: 'limpo', 1: 'quase limpo', 2: 'parc. nublado', 3: 'nublado', 45: 'neblina', 48: 'neblina',
@@ -387,7 +391,8 @@ const I18N = {
     unavailable: 'unavailable',
     greet: ['Good night', 'Good morning', 'Good afternoon', 'Good evening'],
     pending: (n) => `${n} pending`,
-    statLabels: { holiday: 'Next holiday', hilo: 'High/Low', feels: 'Feels like', uv: 'UV', rain: 'Rain' },
+    statLabels: { holiday: 'Next holiday', weather: 'Now', hilo: 'High/Low', feels: 'Feels like', uv: 'UV', rain: 'Rain' },
+    groups: { time: 'Time', dates: 'Dates', weather: 'Weather', currency: 'Rates', misc: 'Other' },
     stats: { clock: 'Time', tz: 'Extra time zones', date: 'Date', countdown: 'Countdowns', holiday: 'Next holiday',
       weather: 'Weather', weatherDetail: 'Weather details', rain: 'Chance of rain', currency: 'Rates', todos: 'Tasks', uptime: 'Open for' },
     wmo: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'fog',
@@ -550,6 +555,15 @@ function greet() {
 /* ---------- stats ---------- */
 const statCache = { weather: '…', weatherDetail: '…', rain: '…', holiday: null, cur: {} };
 
+// stats are shown in columns, one per group, in this order
+const STAT_GROUPS = {
+  time: ['clock', 'tz', 'date'],
+  dates: ['countdown', 'holiday'],
+  weather: ['weather', 'weatherDetail', 'rain'],
+  currency: ['currency'],
+  misc: ['todos', 'uptime'],
+};
+
 function statRows(k) {
   const t = L();
   if (k === 'currency') return cfg.currencies.map(([f, to], i) => [`${f}/${to}`, `cur-${i}`]);
@@ -565,18 +579,31 @@ function renderStats() {
   statCache.weather = statCache.hilo = statCache.feels = statCache.uv = statCache.rain = '…';
   statCache.holiday = null;
   statCache.cur = {};
-  const rows = STAT_KEYS.filter((k) => cfg.stats.includes(k)).flatMap(statRows);
-  for (const [label, id] of rows) {
-    const div = document.createElement('div');
-    div.className = 'stat';
-    const b = document.createElement('b');
-    b.textContent = label + ':';
-    const v = document.createElement('span');
-    v.id = 'st-' + id;
-    div.append(b, ' ', v);
-    row.append(div);
+  statCache.city = '';
+  const t = L();
+  let any = false;
+  for (const [g, keys] of Object.entries(STAT_GROUPS)) {
+    const rows = keys.filter((k) => cfg.stats.includes(k)).flatMap(statRows);
+    if (!rows.length) continue;
+    any = true;
+    const col = document.createElement('div');
+    const h = document.createElement('h3');
+    h.textContent = t.groups[g];
+    if (g === 'weather') { const c = document.createElement('span'); c.className = 'city'; c.id = 'st-city'; h.append(' ', c); }
+    const ul = document.createElement('ul');
+    for (const [label, id] of rows) {
+      const li = document.createElement('li');
+      const b = document.createElement('b');
+      b.textContent = label + ':';
+      const v = document.createElement('span');
+      v.id = 'st-' + id;
+      li.append(b, ' ', v);
+      ul.append(li);
+    }
+    col.append(h, ul);
+    row.append(col);
   }
-  $('#stats-box').style.display = rows.length ? '' : 'none';
+  $('#stats-box').style.display = any ? '' : 'none';
   tick();
   if (['weather', 'weatherDetail', 'rain'].some((k) => cfg.stats.includes(k))) loadWeather();
   if (cfg.stats.includes('holiday')) loadHoliday();
@@ -613,6 +640,7 @@ function tick() {
     : `${cfg.lang === 'en' ? h.name : h.localName}, ${new Date(h.date + 'T12:00').toLocaleDateString(t.locale, { day: '2-digit', month: '2-digit' })} (${countdownText(daysUntil(h.date))})`);
   setStat('weather', statCache.weather);
   for (const k of ['hilo', 'feels', 'uv']) setStat(k, statCache[k]);
+  setStat('city', statCache.city ? `(${statCache.city})` : '');
   setStat('rain', statCache.rain);
   cfg.currencies.forEach((_, i) => setStat('cur-' + i, statCache.cur[i] ?? '…'));
 }
@@ -643,7 +671,8 @@ async function loadWeather() {
       return { current, daily };
     });
     const t = L(), c = j.current, d = j.daily, r0 = (x) => Math.round(x);
-    statCache.weather = `${r0(c.temperature_2m)}°C, ${t.wmo[c.weather_code] ?? ''} (${loc.name})`;
+    statCache.city = loc.name;
+    statCache.weather = `${r0(c.temperature_2m)}°C, ${t.wmo[c.weather_code] ?? ''}`;
     statCache.hilo = `${r0(d.temperature_2m_max[0])}°/${r0(d.temperature_2m_min[0])}°`;
     statCache.feels = `${r0(c.apparent_temperature)}°`;
     statCache.uv = String(r0(d.uv_index_max[0]));
