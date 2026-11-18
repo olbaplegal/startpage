@@ -179,8 +179,6 @@ body.frames { padding-left: 200px; }
   <div class="flogo" id="frame-title">startpage</div>
   <div class="fopts">
     <a id="fr-remove" data-i18n="frRemove"></a>
-    <a id="fr-hidedirs" data-i18n="frHideDirs"></a>
-    <a id="fr-worksafe" data-i18n="frWorksafe"></a>
   </div>
   <div class="fhd"><span>Sites</span><button id="frame-toggle" data-i18n-title="collapse">−</button></div>
   <ul id="frame-list"></ul>
@@ -198,7 +196,6 @@ body.frames { padding-left: 200px; }
         <a id="filter-btn" data-i18n="filter"></a>
         <div id="filter-menu">
           <label><input type="checkbox" id="use-frames"><span class="ck"></span> <span data-i18n="useFrames"></span></label>
-          <label><input type="checkbox" id="use-catalog"><span class="ck"></span> <span data-i18n="useCatalog"></span></label>
         </div>
       </span>
     </div>
@@ -344,8 +341,8 @@ body.frames { padding-left: 200px; }
 const I18N = {
   pt: {
     locale: 'pt-BR',
-    filter: 'filtro ▼', useFrames: 'Usar Frames', useCatalog: 'Usar Catálogo',
-    frRemove: '[Remover Frames]', frHideDirs: '[Esconder Diretórios]', frWorksafe: '[Mostrar Só Worksafe]',
+    filter: 'filtro ▼', useFrames: 'Usar Frames',
+    frRemove: '[Remover Frames]',
     collapse: 'recolher', close: 'fechar',
     notes: 'Notas', todo: 'Tarefas', keys: 'Atalhos', options: 'Options',
     autosave: 'salva automaticamente', notesPh: 'Rascunhos, links, lembretes…',
@@ -382,8 +379,8 @@ const I18N = {
   },
   en: {
     locale: 'en-US',
-    filter: 'filter ▼', useFrames: 'Use Frames', useCatalog: 'Use Catalog',
-    frRemove: '[Remove Frames]', frHideDirs: '[Hide Directories]', frWorksafe: '[Show Worksafe Only]',
+    filter: 'filter ▼', useFrames: 'Use Frames',
+    frRemove: '[Remove Frames]',
     collapse: 'collapse', close: 'close',
     notes: 'Notes', todo: 'Tasks', keys: 'Shortcuts', options: 'Options',
     autosave: 'saved automatically', notesPh: 'Drafts, links, reminders…',
@@ -451,7 +448,6 @@ const DEFAULTS = {
   weatherFields: ['now', 'hilo', 'feels', 'rain', 'uv'],
   statsVersion: 3,
   useFrames: false,
-  useCatalog: false,
   sitesVersion: SITES_VERSION,
   sites: [
     { cat: 'Reddit', url: 'https://www.reddit.com', links: [
@@ -807,7 +803,7 @@ setInterval(greet, 60e3);
 const filterMenu = $('#filter-menu');
 
 function syncFilterMenu() {
-  for (const [id, key] of [['use-frames', 'useFrames'], ['use-catalog', 'useCatalog']]) {
+  for (const [id, key] of [['use-frames', 'useFrames']]) {
     const cb = document.getElementById(id);
     cb.checked = !!cfg[key];
     cb.nextElementSibling.textContent = cb.checked ? '✔' : '';
@@ -825,7 +821,6 @@ $('#filter-btn').addEventListener('click', (e) => { e.stopPropagation(); filterM
 filterMenu.addEventListener('click', (e) => e.stopPropagation());
 document.addEventListener('click', () => filterMenu.classList.remove('on'));
 $('#use-frames').addEventListener('change', (e) => setFlag('useFrames', e.target.checked));
-$('#use-catalog').addEventListener('change', (e) => setFlag('useCatalog', e.target.checked)); // TODO: catalog view
 
 $('#frame-toggle').addEventListener('click', () => {
   const hidden = $('#frame-list').classList.toggle('hidden');
@@ -833,7 +828,7 @@ $('#frame-toggle').addEventListener('click', () => {
 });
 
 // frame options: placeholders, not implemented yet
-for (const id of ['fr-remove', 'fr-hidedirs', 'fr-worksafe']) {
+for (const id of ['fr-remove']) {
   document.getElementById(id).addEventListener('click', (e) => e.preventDefault());
 }
 
